@@ -1,0 +1,9 @@
+@import url('./vendor/normalize.css');
+
+body {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
