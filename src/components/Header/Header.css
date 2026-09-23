@@ -1,1 +1,23 @@
-/* Header styles */
+.header {
+  min-height: 80px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1232px;
+  min-height: 80px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.header__logo {
+  color: #fff;
+  font-family: 'Roboto Slab', Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  text-decoration: none;
+}

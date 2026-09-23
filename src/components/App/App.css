@@ -2,3 +2,12 @@
   min-width: 320px;
   min-height: 100vh;
 }
+
+.page__hero {
+  min-height: 576px;
+  color: #fff;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)),
+    url('../../images/georgia-de-lotz--UsJoNxLaNo-unsplash.jpg') center / cover
+      no-repeat;
+}
