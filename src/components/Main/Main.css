@@ -1,1 +1,46 @@
-/* Main styles */
+.main__results {
+  min-height: 974px;
+  padding: 80px 40px;
+  background: #f5f6f7;
+}
+
+.main__content {
+  max-width: 1232px;
+  margin: 0 auto;
+}
+
+.main__title {
+  margin: 0 0 64px;
+  color: #1a1b22;
+  font-family: 'Roboto Slab', Georgia, serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 46px;
+}
+
+.main__show-more {
+  display: block;
+  width: 288px;
+  min-height: 64px;
+  margin: 64px auto 0;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 32px;
+  color: #1a1b22;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  background: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.main__show-more:hover {
+  background: #e8e8e8;
+}
+
+.main__show-more:focus-visible {
+  outline: 2px solid #2f71e5;
+  outline-offset: 3px;
+}
