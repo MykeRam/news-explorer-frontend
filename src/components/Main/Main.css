@@ -44,3 +44,39 @@
   outline: 2px solid #2f71e5;
   outline-offset: 3px;
 }
+
+@media screen and (max-width: 900px) {
+  .main__results {
+    min-height: 654px;
+    padding: 40px;
+  }
+
+  .main__title {
+    margin-bottom: 32px;
+    font-size: 30px;
+    line-height: 34px;
+  }
+
+  .main__show-more {
+    width: 240px;
+    min-height: 56px;
+    margin-top: 32px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .main__results {
+    min-height: auto;
+    padding: 32px 16px;
+  }
+
+  .main__title {
+    margin-bottom: 58px;
+  }
+
+  .main__show-more {
+    width: 100%;
+    max-width: 288px;
+    margin-top: 16px;
+  }
+}

@@ -6,3 +6,15 @@
 .saved-news__content {
   min-height: calc(100vh - 160px);
 }
+
+@media screen and (max-width: 900px) {
+  .saved-news__content {
+    min-height: calc(100vh - 130px);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .saved-news__content {
+    min-height: calc(100vh - 232px);
+  }
+}

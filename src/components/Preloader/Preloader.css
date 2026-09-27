@@ -37,3 +37,10 @@
     animation-duration: 1.5s;
   }
 }
+
+@media screen and (max-width: 600px) {
+  .preloader {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}

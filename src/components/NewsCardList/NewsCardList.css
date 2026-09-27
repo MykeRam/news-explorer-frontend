@@ -10,3 +10,18 @@
 .news-card-list__item {
   min-width: 0;
 }
+
+@media screen and (max-width: 900px) {
+  .news-card-list {
+    gap: 8px;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .news-card-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

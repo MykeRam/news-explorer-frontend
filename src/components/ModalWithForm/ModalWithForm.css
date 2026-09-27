@@ -147,3 +147,37 @@
   background: transparent;
   cursor: pointer;
 }
+
+@media screen and (max-width: 600px) {
+  .modal {
+    align-items: flex-end;
+    padding: 56px 0 0;
+  }
+
+  .modal__container {
+    max-width: none;
+    max-height: calc(100vh - 56px);
+    padding: 16px 16px 24px;
+    overflow-y: auto;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal__close {
+    top: 16px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .modal__close::before,
+  .modal__close::after {
+    top: 15px;
+    left: 5px;
+    width: 22px;
+    background: #1a1b22;
+  }
+
+  .modal__title {
+    padding-right: 36px;
+  }
+}
