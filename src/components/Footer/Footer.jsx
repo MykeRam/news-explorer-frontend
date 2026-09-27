@@ -1,4 +1,5 @@
 import './Footer.css'
+import { Link } from 'react-router-dom'
 import githubIcon from '../../images/github-icon.svg'
 import linkedinIcon from '../../images/linkedin-icon.svg'
 
@@ -10,9 +11,9 @@ function Footer() {
           © {new Date().getFullYear()} NewsExplorer, Powered by News API
         </p>
         <nav className="footer__navigation" aria-label="Footer navigation">
-          <a className="footer__link" href="/">
+          <Link className="footer__link" to="/">
             Home
-          </a>
+          </Link>
           <a
             className="footer__link"
             href="https://tripleten.com/"

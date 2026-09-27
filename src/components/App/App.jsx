@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import About from '../About/About.jsx'
 import Footer from '../Footer/Footer.jsx'
 import Header from '../Header/Header.jsx'
 import Main from '../Main/Main.jsx'
+import SavedNews from '../SavedNews/SavedNews.jsx'
 import SearchForm from '../SearchForm/SearchForm.jsx'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
 import natureImage from '../../images/article-nature.jpg'
@@ -46,8 +48,8 @@ function App() {
     },
   ])
 
-  return (
-    <div className="page">
+  const homePage = (
+    <>
       <section className="page__hero">
         <Header />
         <SearchForm />
@@ -55,6 +57,16 @@ function App() {
       <Main articles={articles} />
       <About />
       <Footer />
+    </>
+  )
+
+  return (
+    <div className="page">
+      <Routes>
+        <Route path="/" element={homePage} />
+        <Route path="/saved-news" element={<SavedNews />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   )
 }

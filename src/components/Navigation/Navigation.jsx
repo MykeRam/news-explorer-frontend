@@ -1,15 +1,21 @@
 import './Navigation.css'
+import { NavLink } from 'react-router-dom'
 
-function Navigation() {
+function Navigation({ theme = 'dark' }) {
+  const getLinkClassName = ({ isActive }) =>
+    `navigation__link${isActive ? ' navigation__link_active' : ''}`
+
   return (
-    <nav className="navigation" aria-label="Main navigation">
-      <a
-        className="navigation__link navigation__link_active"
-        href="/"
-        aria-current="page"
-      >
+    <nav
+      className={`navigation navigation_theme_${theme}`}
+      aria-label="Main navigation"
+    >
+      <NavLink className={getLinkClassName} to="/" end>
         Home
-      </a>
+      </NavLink>
+      <NavLink className={getLinkClassName} to="/saved-news">
+        Saved articles
+      </NavLink>
       <button className="navigation__sign-in" type="button">
         Sign in
       </button>

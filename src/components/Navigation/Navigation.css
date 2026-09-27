@@ -22,6 +22,14 @@
   border-bottom: 3px solid #fff;
 }
 
+.navigation_theme_light .navigation__link {
+  color: #1a1b22;
+}
+
+.navigation_theme_light .navigation__link_active {
+  border-bottom-color: #1a1b22;
+}
+
 .navigation__sign-in {
   align-self: center;
   min-width: 176px;
@@ -40,6 +48,20 @@
 
 .navigation__sign-in:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.navigation_theme_light .navigation__sign-in {
+  color: #1a1b22;
+  border-color: #1a1b22;
+}
+
+.navigation_theme_light .navigation__sign-in:hover {
+  background: rgba(26, 27, 34, 0.06);
+}
+
+.navigation_theme_light .navigation__sign-in:focus-visible,
+.navigation_theme_light .navigation__link:focus-visible {
+  outline-color: #2f71e5;
 }
 
 .navigation__sign-in:focus-visible,

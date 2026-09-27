@@ -21,3 +21,11 @@
   line-height: 24px;
   text-decoration: none;
 }
+
+.header_theme_light {
+  border-bottom-color: rgba(26, 27, 34, 0.2);
+}
+
+.header_theme_light .header__logo {
+  color: #1a1b22;
+}

@@ -1,14 +1,19 @@
 import './Header.css'
+import { Link } from 'react-router-dom'
 import Navigation from '../Navigation/Navigation.jsx'
 
-function Header() {
+function Header({ theme = 'dark' }) {
   return (
-    <header className="header">
+    <header className={`header header_theme_${theme}`}>
       <div className="header__content">
-        <a className="header__logo" href="/" aria-label="NewsExplorer home">
+        <Link
+          className="header__logo"
+          to="/"
+          aria-label="NewsExplorer home"
+        >
           NewsExplorer
-        </a>
-        <Navigation />
+        </Link>
+        <Navigation theme={theme} />
       </div>
     </header>
   )

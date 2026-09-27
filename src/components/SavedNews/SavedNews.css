@@ -1,1 +1,8 @@
-/* SavedNews styles */
+.saved-news {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.saved-news__content {
+  min-height: calc(100vh - 160px);
+}
