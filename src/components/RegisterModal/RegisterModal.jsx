@@ -25,6 +25,7 @@ function RegisterModal({ isOpen, onClose, onLoginClick }) {
           placeholder="Enter email"
           autoComplete="email"
           autoFocus
+          required
         />
       </label>
       <label className="modal__label" htmlFor="register-password">
@@ -36,6 +37,7 @@ function RegisterModal({ isOpen, onClose, onLoginClick }) {
           type="password"
           placeholder="Enter password"
           autoComplete="new-password"
+          required
         />
       </label>
       <label className="modal__label" htmlFor="register-name">
@@ -47,6 +49,7 @@ function RegisterModal({ isOpen, onClose, onLoginClick }) {
           type="text"
           placeholder="Enter your username"
           autoComplete="name"
+          required
         />
       </label>
     </ModalWithForm>
