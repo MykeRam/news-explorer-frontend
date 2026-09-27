@@ -12,6 +12,7 @@ import natureImage from '../../images/article-nature.jpg'
 import tetonImage from '../../images/article-teton.jpg'
 
 function App() {
+  const [isLoading] = useState(false)
   const [articles] = useState([
     {
       id: 1,
@@ -54,7 +55,7 @@ function App() {
         <Header />
         <SearchForm />
       </section>
-      <Main articles={articles} />
+      <Main articles={articles} isLoading={isLoading} />
       <About />
       <Footer />
     </>
