@@ -4,7 +4,9 @@ import './App.css'
 import About from '../About/About.jsx'
 import Footer from '../Footer/Footer.jsx'
 import Header from '../Header/Header.jsx'
+import LoginModal from '../LoginModal/LoginModal.jsx'
 import Main from '../Main/Main.jsx'
+import RegisterModal from '../RegisterModal/RegisterModal.jsx'
 import SavedNews from '../SavedNews/SavedNews.jsx'
 import SearchForm from '../SearchForm/SearchForm.jsx'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
@@ -12,6 +14,7 @@ import natureImage from '../../images/article-nature.jpg'
 import tetonImage from '../../images/article-teton.jpg'
 
 function App() {
+  const [activeModal, setActiveModal] = useState(null)
   const [isLoading] = useState(false)
   const [articles] = useState([
     {
@@ -49,10 +52,14 @@ function App() {
     },
   ])
 
+  const handleSignInClick = () => setActiveModal('login')
+  const handleRegisterClick = () => setActiveModal('register')
+  const handleCloseModal = () => setActiveModal(null)
+
   const homePage = (
     <>
       <section className="page__hero">
-        <Header />
+        <Header onSignInClick={handleSignInClick} />
         <SearchForm />
       </section>
       <Main articles={articles} isLoading={isLoading} />
@@ -65,9 +72,22 @@ function App() {
     <div className="page">
       <Routes>
         <Route path="/" element={homePage} />
-        <Route path="/saved-news" element={<SavedNews />} />
+        <Route
+          path="/saved-news"
+          element={<SavedNews onSignInClick={handleSignInClick} />}
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <LoginModal
+        isOpen={activeModal === 'login'}
+        onClose={handleCloseModal}
+        onRegisterClick={handleRegisterClick}
+      />
+      <RegisterModal
+        isOpen={activeModal === 'register'}
+        onClose={handleCloseModal}
+        onLoginClick={handleSignInClick}
+      />
     </div>
   )
 }

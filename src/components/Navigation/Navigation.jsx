@@ -1,7 +1,7 @@
 import './Navigation.css'
 import { NavLink } from 'react-router-dom'
 
-function Navigation({ theme = 'dark' }) {
+function Navigation({ theme = 'dark', onSignInClick }) {
   const getLinkClassName = ({ isActive }) =>
     `navigation__link${isActive ? ' navigation__link_active' : ''}`
 
@@ -16,7 +16,11 @@ function Navigation({ theme = 'dark' }) {
       <NavLink className={getLinkClassName} to="/saved-news">
         Saved articles
       </NavLink>
-      <button className="navigation__sign-in" type="button">
+      <button
+        className="navigation__sign-in"
+        type="button"
+        onClick={onSignInClick}
+      >
         Sign in
       </button>
     </nav>
