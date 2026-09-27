@@ -4,6 +4,15 @@ import bookmarkIcon from '../../images/bookmark-icon.svg'
 function NewsCard({ article }) {
   return (
     <article className="news-card">
+      {article.url && (
+        <a
+          className="news-card__link"
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Read ${article.title} in a new tab`}
+        />
+      )}
       <div className="news-card__image-wrapper">
         <img
           className="news-card__image"

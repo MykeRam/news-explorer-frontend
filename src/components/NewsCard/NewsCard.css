@@ -8,6 +8,18 @@
   box-shadow: 0 5px 15px rgba(14, 26, 57, 0.08);
 }
 
+.news-card__link {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.news-card__link:focus-visible {
+  outline: 3px solid #2f71e5;
+  outline-offset: -3px;
+}
+
 .news-card__image-wrapper {
   position: relative;
   height: 272px;
@@ -22,6 +34,7 @@
 
 .news-card__save-control {
   position: absolute;
+  z-index: 2;
   top: 24px;
   right: 24px;
   display: flex;
