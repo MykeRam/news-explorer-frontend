@@ -9,6 +9,7 @@ import Main from '../Main/Main.jsx'
 import RegisterModal from '../RegisterModal/RegisterModal.jsx'
 import SavedNews from '../SavedNews/SavedNews.jsx'
 import SearchForm from '../SearchForm/SearchForm.jsx'
+import { getNews } from '../../utils/newsApi.js'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
 import natureImage from '../../images/article-nature.jpg'
 import tetonImage from '../../images/article-teton.jpg'
@@ -55,12 +56,13 @@ function App() {
   const handleSignInClick = () => setActiveModal('login')
   const handleRegisterClick = () => setActiveModal('register')
   const handleCloseModal = () => setActiveModal(null)
+  const handleSearch = (query) => getNews(query)
 
   const homePage = (
     <>
       <section className="page__hero">
         <Header onSignInClick={handleSignInClick} />
-        <SearchForm />
+        <SearchForm onSearch={handleSearch} />
       </section>
       <Main articles={articles} isLoading={isLoading} />
       <About />
