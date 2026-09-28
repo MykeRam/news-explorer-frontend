@@ -6,7 +6,16 @@ import notFoundIcon from '../../images/not-found-icon.svg'
 
 const ARTICLES_PER_PAGE = 3
 
-function Main({ articles, isLoading = false, hasSearched, searchError }) {
+function Main({
+  articles,
+  isLoading = false,
+  hasSearched,
+  searchError,
+  isLoggedIn,
+  savedArticles,
+  pendingArticleUrls,
+  onToggleSave,
+}) {
   const [visibleArticleCount, setVisibleArticleCount] = useState(
     ARTICLES_PER_PAGE,
   )
@@ -62,7 +71,13 @@ function Main({ articles, isLoading = false, hasSearched, searchError }) {
             <h2 className="main__title" id="search-results-title">
               Search results
             </h2>
-            <NewsCardList articles={visibleArticles} />
+            <NewsCardList
+              articles={visibleArticles}
+              isLoggedIn={isLoggedIn}
+              savedArticles={savedArticles}
+              pendingArticleUrls={pendingArticleUrls}
+              onToggleSave={onToggleSave}
+            />
             {hasMoreArticles && (
               <button
                 className="main__show-more"

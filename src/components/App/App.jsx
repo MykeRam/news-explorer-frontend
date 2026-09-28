@@ -13,8 +13,11 @@ import SearchForm from '../SearchForm/SearchForm.jsx'
 import { getNews } from '../../utils/newsApi.js'
 import {
   checkToken,
+  deleteArticle,
+  getSavedArticles,
   loginUser,
   registerUser,
+  saveArticle,
 } from '../../utils/mainApi.js'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
 
@@ -56,6 +59,9 @@ function App() {
   const [hasSearched, setHasSearched] = useState(false)
   const [searchError, setSearchError] = useState('')
   const [articles, setArticles] = useState([])
+  const [savedArticles, setSavedArticles] = useState([])
+  const [currentKeyword, setCurrentKeyword] = useState('')
+  const [pendingArticleUrls, setPendingArticleUrls] = useState([])
 
   useEffect(() => {
     const token = localStorage.getItem('jwt')
@@ -69,7 +75,12 @@ function App() {
 
     checkToken(token)
       .then((user) => {
-        if (isMounted) setCurrentUser(user)
+        return getSavedArticles(token).then((storedArticles) => {
+          if (isMounted) {
+            setCurrentUser(user)
+            setSavedArticles(storedArticles)
+          }
+        })
       })
       .catch(() => localStorage.removeItem('jwt'))
       .finally(() => {
@@ -87,15 +98,20 @@ function App() {
   const handleLogin = (credentials) =>
     loginUser(credentials).then(({ token, user }) => {
       localStorage.setItem('jwt', token)
-      setCurrentUser(user)
-      handleCloseModal()
+      return getSavedArticles(token).then((storedArticles) => {
+        setCurrentUser(user)
+        setSavedArticles(storedArticles)
+        handleCloseModal()
+      })
     })
   const handleRegister = (userData) => registerUser(userData)
   const handleLogout = () => {
     localStorage.removeItem('jwt')
     setCurrentUser(null)
+    setSavedArticles([])
   }
   const handleSearch = (query) => {
+    setCurrentKeyword(query)
     setHasSearched(true)
     setIsLoading(true)
     setSearchError('')
@@ -110,6 +126,47 @@ function App() {
       })
       .finally(() => {
         setIsLoading(false)
+      })
+  }
+
+  const handleToggleArticleSave = (article) => {
+    const token = localStorage.getItem('jwt')
+
+    if (!token || !currentUser) {
+      handleSignInClick()
+      return Promise.resolve()
+    }
+
+    const savedArticle = savedArticles.find(
+      (storedArticle) => storedArticle.url === article.url,
+    )
+
+    setPendingArticleUrls((currentUrls) => [...currentUrls, article.url])
+
+    const request = savedArticle
+      ? deleteArticle(token, savedArticle._id).then(() => {
+          setSavedArticles((currentArticles) =>
+            currentArticles.filter(
+              (storedArticle) => storedArticle._id !== savedArticle._id,
+            ),
+          )
+        })
+      : saveArticle(token, article, currentKeyword).then((storedArticle) => {
+          setSavedArticles((currentArticles) => [
+            storedArticle,
+            ...currentArticles,
+          ])
+        })
+
+    return request
+      .catch(() => {
+        handleLogout()
+        handleSignInClick()
+      })
+      .finally(() => {
+        setPendingArticleUrls((currentUrls) =>
+          currentUrls.filter((url) => url !== article.url),
+        )
       })
   }
 
@@ -128,6 +185,10 @@ function App() {
         isLoading={isLoading}
         hasSearched={hasSearched}
         searchError={searchError}
+        isLoggedIn={Boolean(currentUser)}
+        savedArticles={savedArticles}
+        pendingArticleUrls={pendingArticleUrls}
+        onToggleSave={handleToggleArticleSave}
       />
       <About />
       <Footer />
@@ -150,6 +211,9 @@ function App() {
                 currentUser={currentUser}
                 onSignInClick={handleSignInClick}
                 onLogout={handleLogout}
+                savedArticles={savedArticles}
+                pendingArticleUrls={pendingArticleUrls}
+                onToggleSave={handleToggleArticleSave}
               />
             </ProtectedRoute>
           }

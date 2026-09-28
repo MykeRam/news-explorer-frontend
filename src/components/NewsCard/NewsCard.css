@@ -55,9 +55,31 @@
   cursor: pointer;
 }
 
+.news-card__save-button:disabled {
+  cursor: not-allowed;
+}
+
 .news-card__save-icon {
   width: 14px;
   height: 19px;
+}
+
+.news-card__save-icon path {
+  fill: none;
+  stroke: #b6bcbf;
+  transition:
+    fill 0.2s ease,
+    stroke 0.2s ease;
+}
+
+.news-card__save-button:not(:disabled):hover .news-card__save-icon path {
+  stroke: #1a1b22;
+}
+
+.news-card__save-button_saved .news-card__save-icon path,
+.news-card__save-button_saved:not(:disabled):hover .news-card__save-icon path {
+  fill: #2f71e5;
+  stroke: #2f71e5;
 }
 
 .news-card__save-message {
@@ -80,10 +102,6 @@
 .news-card__save-control:hover .news-card__save-message,
 .news-card__save-control:focus-within .news-card__save-message {
   display: flex;
-}
-
-.news-card__save-button:hover .news-card__save-icon {
-  filter: brightness(0);
 }
 
 .news-card__save-button:focus-visible {

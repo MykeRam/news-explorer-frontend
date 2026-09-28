@@ -1,7 +1,18 @@
 import './NewsCard.css'
-import bookmarkIcon from '../../images/bookmark-icon.svg'
 
-function NewsCard({ article }) {
+function NewsCard({
+  article,
+  isLoggedIn,
+  isSaved,
+  isSaving,
+  onToggleSave,
+}) {
+  const handleSaveClick = () => {
+    if (isLoggedIn && !isSaving) {
+      onToggleSave(article)
+    }
+  }
+
   return (
     <article className="news-card">
       {article.url && (
@@ -20,17 +31,32 @@ function NewsCard({ article }) {
           alt={article.imageAlt}
         />
         <div className="news-card__save-control">
-          <span className="news-card__save-message">Sign in to save articles</span>
+          {!isLoggedIn && (
+            <span className="news-card__save-message">
+              Sign in to save articles
+            </span>
+          )}
           <button
-            className="news-card__save-button"
+            className={`news-card__save-button${isSaved ? ' news-card__save-button_saved' : ''}`}
             type="button"
-            aria-label={`Save ${article.title}`}
+            aria-label={`${isSaved ? 'Remove' : 'Save'} ${article.title}`}
+            disabled={!isLoggedIn || isSaving}
+            onClick={handleSaveClick}
           >
-            <img
+            <svg
               className="news-card__save-icon"
-              src={bookmarkIcon}
-              alt=""
-            />
+              width="14"
+              height="19"
+              viewBox="0 0 14 19"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M1 1.5H13V17.5L7 13.8L1 17.5V1.5Z"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         </div>
       </div>
