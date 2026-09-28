@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import About from '../About/About.jsx'
@@ -6,6 +6,7 @@ import Footer from '../Footer/Footer.jsx'
 import Header from '../Header/Header.jsx'
 import LoginModal from '../LoginModal/LoginModal.jsx'
 import Main from '../Main/Main.jsx'
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute.jsx'
 import RegisterModal from '../RegisterModal/RegisterModal.jsx'
 import SavedNews from '../SavedNews/SavedNews.jsx'
 import SearchForm from '../SearchForm/SearchForm.jsx'
@@ -50,6 +51,7 @@ const formatArticle = (article, index) => ({
 function App() {
   const [activeModal, setActiveModal] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
+  const [isAuthChecking, setIsAuthChecking] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [searchError, setSearchError] = useState('')
@@ -58,14 +60,28 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('jwt')
 
-    if (!token) return
+    if (!token) {
+      setIsAuthChecking(false)
+      return undefined
+    }
+
+    let isMounted = true
 
     checkToken(token)
-      .then(setCurrentUser)
+      .then((user) => {
+        if (isMounted) setCurrentUser(user)
+      })
       .catch(() => localStorage.removeItem('jwt'))
+      .finally(() => {
+        if (isMounted) setIsAuthChecking(false)
+      })
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
-  const handleSignInClick = () => setActiveModal('login')
+  const handleSignInClick = useCallback(() => setActiveModal('login'), [])
   const handleRegisterClick = () => setActiveModal('register')
   const handleCloseModal = () => setActiveModal(null)
   const handleLogin = (credentials) =>
@@ -125,11 +141,17 @@ function App() {
         <Route
           path="/saved-news"
           element={
-            <SavedNews
-              currentUser={currentUser}
-              onSignInClick={handleSignInClick}
-              onLogout={handleLogout}
-            />
+            <ProtectedRoute
+              isLoggedIn={Boolean(currentUser)}
+              isAuthChecking={isAuthChecking}
+              onUnauthorized={handleSignInClick}
+            >
+              <SavedNews
+                currentUser={currentUser}
+                onSignInClick={handleSignInClick}
+                onLogout={handleLogout}
+              />
+            </ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
