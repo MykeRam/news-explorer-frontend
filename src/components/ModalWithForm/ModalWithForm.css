@@ -104,6 +104,19 @@
   border-bottom-color: #2f71e5;
 }
 
+.modal__input[aria-invalid='true'] {
+  border-bottom-color: #ff0000;
+}
+
+.modal__input-error {
+  min-height: 15px;
+  margin-top: 3px;
+  color: #ff0000;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 15px;
+}
+
 .modal__submit {
   width: 100%;
   min-height: 64px;
