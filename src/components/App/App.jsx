@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import About from '../About/About.jsx'
@@ -10,6 +10,11 @@ import RegisterModal from '../RegisterModal/RegisterModal.jsx'
 import SavedNews from '../SavedNews/SavedNews.jsx'
 import SearchForm from '../SearchForm/SearchForm.jsx'
 import { getNews } from '../../utils/newsApi.js'
+import {
+  checkToken,
+  loginUser,
+  registerUser,
+} from '../../utils/mainApi.js'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
 
 const SEARCH_ERROR_MESSAGE =
@@ -44,14 +49,36 @@ const formatArticle = (article, index) => ({
 
 function App() {
   const [activeModal, setActiveModal] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [searchError, setSearchError] = useState('')
   const [articles, setArticles] = useState([])
 
+  useEffect(() => {
+    const token = localStorage.getItem('jwt')
+
+    if (!token) return
+
+    checkToken(token)
+      .then(setCurrentUser)
+      .catch(() => localStorage.removeItem('jwt'))
+  }, [])
+
   const handleSignInClick = () => setActiveModal('login')
   const handleRegisterClick = () => setActiveModal('register')
   const handleCloseModal = () => setActiveModal(null)
+  const handleLogin = (credentials) =>
+    loginUser(credentials).then(({ token, user }) => {
+      localStorage.setItem('jwt', token)
+      setCurrentUser(user)
+      handleCloseModal()
+    })
+  const handleRegister = (userData) => registerUser(userData)
+  const handleLogout = () => {
+    localStorage.removeItem('jwt')
+    setCurrentUser(null)
+  }
   const handleSearch = (query) => {
     setHasSearched(true)
     setIsLoading(true)
@@ -73,7 +100,11 @@ function App() {
   const homePage = (
     <>
       <section className="page__hero">
-        <Header onSignInClick={handleSignInClick} />
+        <Header
+          currentUser={currentUser}
+          onSignInClick={handleSignInClick}
+          onLogout={handleLogout}
+        />
         <SearchForm onSearch={handleSearch} />
       </section>
       <Main
@@ -93,7 +124,13 @@ function App() {
         <Route path="/" element={homePage} />
         <Route
           path="/saved-news"
-          element={<SavedNews onSignInClick={handleSignInClick} />}
+          element={
+            <SavedNews
+              currentUser={currentUser}
+              onSignInClick={handleSignInClick}
+              onLogout={handleLogout}
+            />
+          }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -101,11 +138,13 @@ function App() {
         isOpen={activeModal === 'login'}
         onClose={handleCloseModal}
         onRegisterClick={handleRegisterClick}
+        onLogin={handleLogin}
       />
       <RegisterModal
         isOpen={activeModal === 'register'}
         onClose={handleCloseModal}
         onLoginClick={handleSignInClick}
+        onRegister={handleRegister}
       />
     </div>
   )

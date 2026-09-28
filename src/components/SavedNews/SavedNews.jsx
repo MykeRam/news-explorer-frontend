@@ -3,10 +3,15 @@ import Footer from '../Footer/Footer.jsx'
 import Header from '../Header/Header.jsx'
 import SavedNewsHeader from '../SavedNewsHeader/SavedNewsHeader.jsx'
 
-function SavedNews({ onSignInClick }) {
+function SavedNews({ currentUser, onSignInClick, onLogout }) {
   return (
     <div className="saved-news">
-      <Header theme="light" onSignInClick={onSignInClick} />
+      <Header
+        theme="light"
+        currentUser={currentUser}
+        onSignInClick={onSignInClick}
+        onLogout={onLogout}
+      />
       <main className="saved-news__content">
         <SavedNewsHeader />
       </main>

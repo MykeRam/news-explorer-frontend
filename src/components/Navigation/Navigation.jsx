@@ -5,7 +5,9 @@ function Navigation({
   theme = 'dark',
   isOpen = false,
   onNavigate,
+  currentUser,
   onSignInClick,
+  onLogout,
 }) {
   const getLinkClassName = ({ isActive }) =>
     `navigation__link${isActive ? ' navigation__link_active' : ''}`
@@ -28,9 +30,10 @@ function Navigation({
       <button
         className="navigation__sign-in"
         type="button"
-        onClick={onSignInClick}
+        aria-label={currentUser ? `Sign out ${currentUser.name}` : 'Sign in'}
+        onClick={currentUser ? onLogout : onSignInClick}
       >
-        Sign in
+        {currentUser ? currentUser.name : 'Sign in'}
       </button>
     </nav>
   )

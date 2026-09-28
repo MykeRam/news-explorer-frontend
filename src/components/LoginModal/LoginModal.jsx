@@ -19,16 +19,20 @@ const validateEmail = (email) => {
 const validatePassword = (password) =>
   password.trim() ? '' : 'Please enter your password.'
 
-function LoginModal({ isOpen, onClose, onRegisterClick }) {
+function LoginModal({ isOpen, onClose, onRegisterClick, onLogin }) {
   const [values, setValues] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({ email: '', password: '' })
   const [touched, setTouched] = useState({ email: false, password: false })
+  const [submitError, setSubmitError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (!isOpen) {
       setValues({ email: '', password: '' })
       setErrors({ email: '', password: '' })
       setTouched({ email: false, password: false })
+      setSubmitError('')
+      setIsSubmitting(false)
     }
   }, [isOpen])
 
@@ -72,7 +76,14 @@ function LoginModal({ isOpen, onClose, onRegisterClick }) {
         email: validateEmail(values.email),
         password: validatePassword(values.password),
       })
+      return
     }
+
+    setSubmitError('')
+    setIsSubmitting(true)
+    onLogin(values)
+      .catch((error) => setSubmitError(error.message))
+      .finally(() => setIsSubmitting(false))
   }
 
   return (
@@ -82,10 +93,10 @@ function LoginModal({ isOpen, onClose, onRegisterClick }) {
       onSubmit={handleSubmit}
       title="Sign in"
       name="login"
-      buttonText="Sign in"
+      buttonText={isSubmitting ? 'Signing in...' : 'Sign in'}
       alternateText="Sign up"
       onAlternateClick={onRegisterClick}
-      isSubmitDisabled={!isFormValid}
+      isSubmitDisabled={!isFormValid || isSubmitting}
     >
       <label className="modal__label" htmlFor="login-email">
         Email
@@ -128,6 +139,9 @@ function LoginModal({ isOpen, onClose, onRegisterClick }) {
           {errors.password}
         </span>
       </label>
+      <span className="modal__server-error" role="alert">
+        {submitError}
+      </span>
     </ModalWithForm>
   )
 }

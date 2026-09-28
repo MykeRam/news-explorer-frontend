@@ -1,8 +1,33 @@
+import { useEffect, useState } from 'react'
 import './RegisterModal.css'
 import ModalWithForm from '../ModalWithForm/ModalWithForm.jsx'
 
-function RegisterModal({ isOpen, onClose, onLoginClick }) {
-  const handleSubmit = (event) => event.preventDefault()
+function RegisterModal({ isOpen, onClose, onLoginClick, onRegister }) {
+  const [submitError, setSubmitError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSubmitError('')
+      setIsSubmitting(false)
+    }
+  }, [isOpen])
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+
+    setSubmitError('')
+    setIsSubmitting(true)
+    onRegister({
+      email: formData.get('email'),
+      password: formData.get('password'),
+      name: formData.get('name'),
+    })
+      .then(onLoginClick)
+      .catch((error) => setSubmitError(error.message))
+      .finally(() => setIsSubmitting(false))
+  }
 
   return (
     <ModalWithForm
@@ -11,9 +36,10 @@ function RegisterModal({ isOpen, onClose, onLoginClick }) {
       onSubmit={handleSubmit}
       title="Sign up"
       name="register"
-      buttonText="Sign up"
+      buttonText={isSubmitting ? 'Signing up...' : 'Sign up'}
       alternateText="Sign in"
       onAlternateClick={onLoginClick}
+      isSubmitDisabled={isSubmitting}
     >
       <label className="modal__label" htmlFor="register-email">
         Email
@@ -52,6 +78,9 @@ function RegisterModal({ isOpen, onClose, onLoginClick }) {
           required
         />
       </label>
+      <span className="modal__server-error" role="alert">
+        {submitError}
+      </span>
     </ModalWithForm>
   )
 }
