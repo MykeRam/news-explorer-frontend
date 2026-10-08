@@ -5,6 +5,7 @@ function NewsCard({
   isLoggedIn,
   isSaved,
   isSaving,
+  isSavedPage = false,
   onToggleSave,
 }) {
   const handleSaveClick = () => {
@@ -30,33 +31,56 @@ function NewsCard({
           src={article.image}
           alt={article.imageAlt}
         />
-        <div className="news-card__save-control">
-          {!isLoggedIn && (
-            <span className="news-card__save-message">
+        {isSavedPage && article.keyword && (
+          <span className="news-card__keyword">{article.keyword}</span>
+        )}
+        <div
+          className={`news-card__save-control${isSavedPage ? ' news-card__save-control_remove' : ''}`}
+        >
+          {!isLoggedIn && !isSavedPage && (
+            <span className="news-card__action-message">
               Sign in to save articles
             </span>
           )}
+          {isSavedPage && (
+            <span className="news-card__action-message">Remove from saved</span>
+          )}
           <button
-            className={`news-card__save-button${isSaved ? ' news-card__save-button_saved' : ''}`}
+            className={`news-card__save-button${isSaved ? ' news-card__save-button_saved' : ''}${isSavedPage ? ' news-card__save-button_remove' : ''}`}
             type="button"
-            aria-label={`${isSaved ? 'Remove' : 'Save'} ${article.title}`}
+            aria-label={
+              isSavedPage
+                ? `Remove ${article.title} from saved articles`
+                : `${isSaved ? 'Remove' : 'Save'} ${article.title}`
+            }
             disabled={!isLoggedIn || isSaving}
             onClick={handleSaveClick}
           >
-            <svg
-              className="news-card__save-icon"
-              width="14"
-              height="19"
-              viewBox="0 0 14 19"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M1 1.5H13V17.5L7 13.8L1 17.5V1.5Z"
-                strokeWidth="2"
-                strokeLinejoin="round"
-              />
-            </svg>
+            {isSavedPage ? (
+              <svg
+                className="news-card__remove-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M4 7h16M10 11v6M14 11v6M5 7l1 14h12l1-14M9 7V4h6v3" />
+              </svg>
+            ) : (
+              <svg
+                className="news-card__save-icon"
+                width="14"
+                height="19"
+                viewBox="0 0 14 19"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M1 1.5H13V17.5L7 13.8L1 17.5V1.5Z"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
           </button>
         </div>
       </div>

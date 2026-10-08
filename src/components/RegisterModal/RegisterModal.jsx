@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './RegisterModal.css'
 import ModalWithForm from '../ModalWithForm/ModalWithForm.jsx'
 
-function RegisterModal({ isOpen, onClose, onLoginClick, onRegister }) {
+function RegisterModal({ isOpen, onClose, onLoginClick, onRegister, onSuccess }) {
   const [submitError, setSubmitError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -24,7 +24,7 @@ function RegisterModal({ isOpen, onClose, onLoginClick, onRegister }) {
       password: formData.get('password'),
       name: formData.get('name'),
     })
-      .then(onLoginClick)
+      .then(onSuccess)
       .catch((error) => setSubmitError(error.message))
       .finally(() => setIsSubmitting(false))
   }

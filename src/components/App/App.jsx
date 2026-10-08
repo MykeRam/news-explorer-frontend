@@ -8,6 +8,7 @@ import LoginModal from '../LoginModal/LoginModal.jsx'
 import Main from '../Main/Main.jsx'
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute.jsx'
 import RegisterModal from '../RegisterModal/RegisterModal.jsx'
+import RegistrationSuccessModal from '../RegistrationSuccessModal/RegistrationSuccessModal.jsx'
 import SavedNews from '../SavedNews/SavedNews.jsx'
 import SearchForm from '../SearchForm/SearchForm.jsx'
 import { getNews } from '../../utils/newsApi.js'
@@ -41,9 +42,9 @@ const formatArticleDate = (publishedAt) => {
 const formatArticle = (article, index) => ({
   id: `${article.url || article.title}-${index}`,
   image: article.urlToImage || sitSpotImage,
-  imageAlt: article.title
-    ? `News article: ${article.title}`
-    : 'News article image',
+  imageAlt: article.urlToImage
+    ? article.description || `Photo accompanying the article: ${article.title}`
+    : '',
   date: formatArticleDate(article.publishedAt),
   title: article.title || 'Untitled article',
   description: article.description || '',
@@ -94,6 +95,8 @@ function App() {
 
   const handleSignInClick = useCallback(() => setActiveModal('login'), [])
   const handleRegisterClick = () => setActiveModal('register')
+  const handleRegistrationSuccess = () =>
+    setActiveModal('registration-success')
   const handleCloseModal = () => setActiveModal(null)
   const handleLogin = (credentials) =>
     loginUser(credentials).then(({ token, user }) => {
@@ -231,6 +234,12 @@ function App() {
         onClose={handleCloseModal}
         onLoginClick={handleSignInClick}
         onRegister={handleRegister}
+        onSuccess={handleRegistrationSuccess}
+      />
+      <RegistrationSuccessModal
+        isOpen={activeModal === 'registration-success'}
+        onClose={handleCloseModal}
+        onSignInClick={handleSignInClick}
       />
     </div>
   )

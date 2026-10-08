@@ -7,6 +7,7 @@ function NewsCardList({
   savedArticles = [],
   pendingArticleUrls = [],
   onToggleSave,
+  isSavedPage = false,
 }) {
   return (
     <ul className="news-card-list">
@@ -22,6 +23,7 @@ function NewsCardList({
               isLoggedIn={isLoggedIn}
               isSaved={isSaved}
               isSaving={pendingArticleUrls.includes(article.url)}
+              isSavedPage={isSavedPage}
               onToggleSave={onToggleSave}
             />
           </li>

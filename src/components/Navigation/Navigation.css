@@ -46,6 +46,29 @@
   cursor: pointer;
 }
 
+.navigation__sign-in_authenticated {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.navigation__sign-out-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.navigation__sign-in_authenticated > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .navigation__sign-in:hover {
   background: rgba(255, 255, 255, 0.1);
 }

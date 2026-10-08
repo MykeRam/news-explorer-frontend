@@ -1,5 +1,6 @@
 .news-card {
   position: relative;
+  min-width: 0;
   min-height: 576px;
   overflow: hidden;
   border-radius: 16px;
@@ -23,6 +24,23 @@
 .news-card__image-wrapper {
   position: relative;
   height: 272px;
+}
+
+.news-card__keyword {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  left: 24px;
+  max-width: calc(100% - 112px);
+  padding: 8px 12px;
+  overflow-wrap: anywhere;
+  border-radius: 10px;
+  color: #1a1b22;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  background: #fff;
 }
 
 .news-card__image {
@@ -82,7 +100,7 @@
   stroke: #2f71e5;
 }
 
-.news-card__save-message {
+.news-card__action-message {
   display: none;
   align-items: center;
   justify-content: center;
@@ -99,9 +117,22 @@
   box-shadow: 0 10px 22px rgba(59, 74, 116, 0.1);
 }
 
-.news-card__save-control:hover .news-card__save-message,
-.news-card__save-control:focus-within .news-card__save-message {
+.news-card__save-control:hover .news-card__action-message,
+.news-card__save-control:focus-within .news-card__action-message {
   display: flex;
+}
+
+.news-card__remove-icon {
+  width: 20px;
+  height: 20px;
+  stroke: #1a1b22;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.news-card__save-button_remove:hover .news-card__remove-icon {
+  stroke: #d93025;
 }
 
 .news-card__save-button:focus-visible {
@@ -112,6 +143,7 @@
 .news-card__content {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 304px;
   padding: 20px 24px 24px;
 }
@@ -176,8 +208,13 @@
     right: 8px;
   }
 
-  .news-card__save-message {
+  .news-card__action-message {
     min-width: 146px;
+  }
+
+  .news-card__keyword {
+    top: 8px;
+    left: 8px;
   }
 
   .news-card__content {
@@ -215,13 +252,19 @@
     right: 16px;
   }
 
-  .news-card__save-message {
+  .news-card__save-control:not(.news-card__save-control_remove)
+    .news-card__action-message {
     display: none;
   }
 
-  .news-card__save-control:hover .news-card__save-message,
-  .news-card__save-control:focus-within .news-card__save-message {
-    display: none;
+  .news-card__save-control_remove:hover .news-card__action-message,
+  .news-card__save-control_remove:focus-within .news-card__action-message {
+    display: flex;
+  }
+
+  .news-card__keyword {
+    top: 16px;
+    left: 16px;
   }
 
   .news-card__content {

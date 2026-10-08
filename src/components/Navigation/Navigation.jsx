@@ -20,20 +20,33 @@ function Navigation({
       <NavLink className={getLinkClassName} to="/" end onClick={onNavigate}>
         Home
       </NavLink>
-      <NavLink
-        className={getLinkClassName}
-        to="/saved-news"
-        onClick={onNavigate}
-      >
-        Saved articles
-      </NavLink>
+      {currentUser && (
+        <NavLink
+          className={getLinkClassName}
+          to="/saved-news"
+          onClick={onNavigate}
+        >
+          Saved articles
+        </NavLink>
+      )}
       <button
-        className="navigation__sign-in"
+        className={`navigation__sign-in${currentUser ? ' navigation__sign-in_authenticated' : ''}`}
         type="button"
         aria-label={currentUser ? `Sign out ${currentUser.name}` : 'Sign in'}
         onClick={currentUser ? onLogout : onSignInClick}
       >
-        {currentUser ? currentUser.name : 'Sign in'}
+        <span>{currentUser ? currentUser.name : 'Sign in'}</span>
+        {currentUser && (
+          <svg
+            className="navigation__sign-out-icon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M10 17l5-5-5-5M15 12H3" />
+            <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6" />
+          </svg>
+        )}
       </button>
     </nav>
   )

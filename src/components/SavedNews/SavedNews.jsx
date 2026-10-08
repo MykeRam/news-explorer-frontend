@@ -37,6 +37,7 @@ function SavedNews({
                 savedArticles={savedArticles}
                 pendingArticleUrls={pendingArticleUrls}
                 onToggleSave={onToggleSave}
+                isSavedPage
               />
             </div>
           </section>
