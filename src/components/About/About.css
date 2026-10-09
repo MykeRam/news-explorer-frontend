@@ -1,0 +1,95 @@
+.about {
+  background: #fff;
+}
+
+.about__content {
+  display: flex;
+  align-items: center;
+  max-width: 1232px;
+  min-height: 624px;
+  margin: 0 auto;
+  padding: 80px 40px;
+  gap: 56px;
+}
+
+.about__image {
+  flex: 0 0 464px;
+  width: 464px;
+  height: 464px;
+  object-fit: cover;
+  object-position: center 40%;
+  border-radius: 50%;
+}
+
+.about__description {
+  max-width: 600px;
+}
+
+.about__title {
+  margin: 0 0 24px;
+  color: #1a1b22;
+  font-family: 'Roboto Slab', Georgia, serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 46px;
+}
+
+.about__paragraph {
+  margin: 0 0 16px;
+  color: #1a1b22;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.about__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 900px) {
+  .about__content {
+    align-items: flex-start;
+    min-height: 354px;
+    padding: 40px;
+    gap: 32px;
+  }
+
+  .about__image {
+    flex-basis: 232px;
+    width: 232px;
+    height: 232px;
+  }
+
+  .about__title {
+    margin-bottom: 16px;
+    font-size: 30px;
+    line-height: 40px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .about__content {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 32px 24px 80px;
+    gap: 24px;
+  }
+
+  .about__image {
+    flex-basis: auto;
+    width: 100%;
+    max-width: 272px;
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+
+  .about__description {
+    max-width: none;
+  }
+
+  .about__title {
+    font-size: 30px;
+    line-height: 40px;
+  }
+}

@@ -1,0 +1,18 @@
+@import url('./vendor/normalize.css');
+@import url('./vendor/fonts.css');
+
+body {
+  margin: 0;
+  color: #1a1b22;
+  font-family: Roboto, Arial, sans-serif;
+  background: #fff;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}
