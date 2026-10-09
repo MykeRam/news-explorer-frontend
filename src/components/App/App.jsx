@@ -42,9 +42,9 @@ const formatArticleDate = (publishedAt) => {
 const formatArticle = (article, index) => ({
   id: `${article.url || article.title}-${index}`,
   image: article.urlToImage || sitSpotImage,
-  imageAlt: article.urlToImage
-    ? article.description || `Photo accompanying the article: ${article.title}`
-    : '',
+  // Article thumbnails are supplementary; the card already exposes the
+  // headline, summary, and an explicitly labeled article link to assistive tech.
+  imageAlt: '',
   date: formatArticleDate(article.publishedAt),
   title: article.title || 'Untitled article',
   description: article.description || '',
