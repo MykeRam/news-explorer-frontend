@@ -1,0 +1,123 @@
+.main__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 374px;
+  padding: 80px 40px;
+  text-align: center;
+  background: #f5f6f7;
+}
+
+.main__status-icon {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 24px;
+}
+
+.main__status-title {
+  margin: 0 0 16px;
+  color: #1a1b22;
+  font-family: 'Roboto Slab', Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.main__status-text,
+.main__error {
+  max-width: 356px;
+  margin: 0;
+  color: #b6bcbf;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.main__results {
+  min-height: 974px;
+  padding: 80px 40px;
+  background: #f5f6f7;
+}
+
+.main__content {
+  max-width: 1232px;
+  margin: 0 auto;
+}
+
+.main__title {
+  margin: 0 0 64px;
+  color: #1a1b22;
+  font-family: 'Roboto Slab', Georgia, serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 46px;
+}
+
+.main__show-more {
+  display: block;
+  width: 288px;
+  min-height: 64px;
+  margin: 64px auto 0;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 32px;
+  color: #1a1b22;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  background: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.main__show-more:hover {
+  background: #e8e8e8;
+}
+
+.main__show-more:focus-visible {
+  outline: 2px solid #2f71e5;
+  outline-offset: 3px;
+}
+
+@media screen and (max-width: 900px) {
+  .main__results {
+    min-height: 654px;
+    padding: 40px;
+  }
+
+  .main__title {
+    margin-bottom: 32px;
+    font-size: 30px;
+    line-height: 34px;
+  }
+
+  .main__show-more {
+    width: 240px;
+    min-height: 56px;
+    margin-top: 32px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .main__status {
+    min-height: 286px;
+    padding: 48px 16px;
+  }
+
+  .main__results {
+    min-height: auto;
+    padding: 32px 16px;
+  }
+
+  .main__title {
+    margin-bottom: 58px;
+  }
+
+  .main__show-more {
+    width: 100%;
+    max-width: 288px;
+    margin-top: 16px;
+  }
+}

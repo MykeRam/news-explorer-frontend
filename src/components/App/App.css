@@ -1,0 +1,25 @@
+.page {
+  min-height: 100vh;
+}
+
+.page__hero {
+  min-height: 576px;
+  color: #fff;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)),
+    url('../../images/georgia-de-lotz--UsJoNxLaNo-unsplash.jpg') center / cover
+      no-repeat;
+}
+
+@media screen and (max-width: 900px) {
+  .page__hero {
+    min-height: 400px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .page__hero {
+    min-height: 536px;
+    background-position: center;
+  }
+}
