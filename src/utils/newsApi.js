@@ -1,5 +1,5 @@
 const NEWS_API_URL = 'https://newsapi.org/v2/everything'
-const NEWS_API_PROXY_URL = 'https://nomoreparties.co/news/v2/everything'
+const NEWS_API_PROXY_URL = 'https://news-api-proxy.up.railway.app/news/v2/everything'
 const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY
 
 const getDateString = (date) => date.toISOString().split('T')[0]
