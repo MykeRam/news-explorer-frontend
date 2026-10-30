@@ -17,12 +17,14 @@ News Explorer is a responsive React application that lets users search for recen
 - Save and remove articles and summarize their search keywords
 - Navigate with responsive desktop, tablet, and mobile layouts
 
-Stage 1 uses local storage and asynchronous mock responses for authentication and saved-article behavior. These utilities provide the frontend interface that can later be connected to the project backend.
+Stage 3 integration is in progress on `stage-3-frontend-auth`. This branch uses React Router 5 and builds for the root path on the planned Google Cloud deployment. The deployed Stage 1 site remains at the link above.
+
+Authentication and saved articles currently still use the Stage 1 mock API. Stage 1 uses local storage and asynchronous mock responses for authentication and saved-article behavior. These utilities provide the frontend interface that can later be connected to the project backend.
 
 ## Technologies
 
 - React 18
-- React Router 6
+- React Router 5
 - JavaScript and JSX
 - CSS with BEM naming conventions
 - Flexbox and CSS Grid
@@ -68,6 +70,8 @@ Stage 1 uses local storage and asynchronous mock responses for authentication an
    ```bash
    npm run dev
    ```
+
+The backend base URL is configured in `src/utils/config.js` and can be overridden with `VITE_MAIN_API_URL`. This public URL is safe to include in the browser bundle. Keep JWT secrets, database credentials, and other private server settings out of frontend environment variables.
 
 ## Available scripts
 

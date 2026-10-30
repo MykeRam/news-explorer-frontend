@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import Preloader from '../Preloader/Preloader.jsx'
 
 function ProtectedRoute({
@@ -19,7 +19,7 @@ function ProtectedRoute({
   }
 
   if (!isLoggedIn) {
-    return <Navigate to="/" replace />
+    return <Redirect to="/" />
   }
 
   return children

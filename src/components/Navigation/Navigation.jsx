@@ -9,20 +9,24 @@ function Navigation({
   onSignInClick,
   onLogout,
 }) {
-  const getLinkClassName = ({ isActive }) =>
-    `navigation__link${isActive ? ' navigation__link_active' : ''}`
-
   return (
     <nav
       className={`navigation navigation_theme_${theme}${isOpen ? ' navigation_open' : ''}`}
       aria-label="Main navigation"
     >
-      <NavLink className={getLinkClassName} to="/" end onClick={onNavigate}>
+      <NavLink
+        className="navigation__link"
+        activeClassName="navigation__link_active"
+        to="/"
+        exact
+        onClick={onNavigate}
+      >
         Home
       </NavLink>
       {currentUser && (
         <NavLink
-          className={getLinkClassName}
+          className="navigation__link"
+          activeClassName="navigation__link_active"
           to="/saved-news"
           onClick={onNavigate}
         >

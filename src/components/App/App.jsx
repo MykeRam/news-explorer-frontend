@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import './App.css'
 import About from '../About/About.jsx'
 import Footer from '../Footer/Footer.jsx'
@@ -53,6 +53,7 @@ const formatArticle = (article, index) => ({
 })
 
 function App() {
+  const history = useHistory()
   const [activeModal, setActiveModal] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const [isAuthChecking, setIsAuthChecking] = useState(true)
@@ -112,6 +113,7 @@ function App() {
     localStorage.removeItem('jwt')
     setCurrentUser(null)
     setSavedArticles([])
+    history.replace('/')
   }
   const handleSearch = (query) => {
     setCurrentKeyword(query)
@@ -200,29 +202,28 @@ function App() {
 
   return (
     <div className="page">
-      <Routes>
-        <Route path="/" element={homePage} />
-        <Route
-          path="/saved-news"
-          element={
-            <ProtectedRoute
-              isLoggedIn={Boolean(currentUser)}
-              isAuthChecking={isAuthChecking}
-              onUnauthorized={handleSignInClick}
-            >
-              <SavedNews
-                currentUser={currentUser}
-                onSignInClick={handleSignInClick}
-                onLogout={handleLogout}
-                savedArticles={savedArticles}
-                pendingArticleUrls={pendingArticleUrls}
-                onToggleSave={handleToggleArticleSave}
-              />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Switch>
+        <Route exact path="/">
+          {homePage}
+        </Route>
+        <Route path="/saved-news">
+          <ProtectedRoute
+            isLoggedIn={Boolean(currentUser)}
+            isAuthChecking={isAuthChecking}
+            onUnauthorized={handleSignInClick}
+          >
+            <SavedNews
+              currentUser={currentUser}
+              onSignInClick={handleSignInClick}
+              onLogout={handleLogout}
+              savedArticles={savedArticles}
+              pendingArticleUrls={pendingArticleUrls}
+              onToggleSave={handleToggleArticleSave}
+            />
+          </ProtectedRoute>
+        </Route>
+        <Redirect to="/" />
+      </Switch>
       <LoginModal
         isOpen={activeModal === 'login'}
         onClose={handleCloseModal}
