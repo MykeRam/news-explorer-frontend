@@ -3,7 +3,7 @@ import './Header.css'
 import { Link } from 'react-router-dom'
 import Navigation from '../Navigation/Navigation.jsx'
 
-function Header({ theme = 'dark', currentUser, onSignInClick, onLogout }) {
+function Header({ theme = 'dark', onSignInClick, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleSignInClick = () => {
@@ -42,7 +42,6 @@ function Header({ theme = 'dark', currentUser, onSignInClick, onLogout }) {
           theme={theme}
           isOpen={isMenuOpen}
           onNavigate={() => setIsMenuOpen(false)}
-          currentUser={currentUser}
           onSignInClick={handleSignInClick}
           onLogout={handleLogout}
         />

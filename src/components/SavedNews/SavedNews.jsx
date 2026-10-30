@@ -5,7 +5,6 @@ import NewsCardList from '../NewsCardList/NewsCardList.jsx'
 import SavedNewsHeader from '../SavedNewsHeader/SavedNewsHeader.jsx'
 
 function SavedNews({
-  currentUser,
   onSignInClick,
   onLogout,
   savedArticles,
@@ -16,13 +15,11 @@ function SavedNews({
     <div className="saved-news">
       <Header
         theme="light"
-        currentUser={currentUser}
         onSignInClick={onSignInClick}
         onLogout={onLogout}
       />
       <main className="saved-news__content">
         <SavedNewsHeader
-          currentUser={currentUser}
           savedArticles={savedArticles}
         />
         {savedArticles.length > 0 && (
@@ -34,7 +31,7 @@ function SavedNews({
               <NewsCardList
                 articles={savedArticles}
                 isLoggedIn
-                savedArticles={savedArticles}
+              savedArticles={savedArticles}
                 pendingArticleUrls={pendingArticleUrls}
                 onToggleSave={onToggleSave}
                 isSavedPage

@@ -23,7 +23,7 @@ const getErrorMessage = (data, status) => {
 }
 
 export class MainApi {
-  constructor({ baseUrl = MAIN_API_BASE_URL, fetchImpl = globalThis.fetch } = {}) {
+  constructor({ baseUrl = MAIN_API_BASE_URL, fetchImpl = (...args) => globalThis.fetch(...args) } = {}) {
     this.baseUrl = baseUrl.replace(/\/+$/, '')
     this.fetch = fetchImpl
   }

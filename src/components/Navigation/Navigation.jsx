@@ -1,3 +1,5 @@
+import { useContext } from 'react'
+import CurrentUserContext from '../../contexts/CurrentUserContext.js'
 import './Navigation.css'
 import { NavLink } from 'react-router-dom'
 
@@ -5,10 +7,10 @@ function Navigation({
   theme = 'dark',
   isOpen = false,
   onNavigate,
-  currentUser,
   onSignInClick,
   onLogout,
 }) {
+  const currentUser = useContext(CurrentUserContext)
   return (
     <nav
       className={`navigation navigation_theme_${theme}${isOpen ? ' navigation_open' : ''}`}

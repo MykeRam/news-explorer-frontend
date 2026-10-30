@@ -5,18 +5,21 @@ import Preloader from '../Preloader/Preloader.jsx'
 function ProtectedRoute({
   isLoggedIn,
   isAuthChecking,
+  sessionError,
   onUnauthorized,
   children,
 }) {
   useEffect(() => {
-    if (!isAuthChecking && !isLoggedIn) {
+    if (!isAuthChecking && !sessionError && !isLoggedIn) {
       onUnauthorized()
     }
-  }, [isAuthChecking, isLoggedIn, onUnauthorized])
+  }, [isAuthChecking, isLoggedIn, sessionError, onUnauthorized])
 
   if (isAuthChecking) {
-    return <Preloader />
+    return <Preloader message="Checking your session..." />
   }
+
+  if (sessionError) return null
 
   if (!isLoggedIn) {
     return <Redirect to="/" />

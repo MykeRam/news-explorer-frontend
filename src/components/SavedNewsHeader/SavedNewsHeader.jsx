@@ -1,3 +1,5 @@
+import { useContext } from 'react'
+import CurrentUserContext from '../../contexts/CurrentUserContext.js'
 import './SavedNewsHeader.css'
 
 function getKeywordSummary(savedArticles) {
@@ -16,7 +18,8 @@ function getKeywordSummary(savedArticles) {
   return `By keywords: ${keywords.slice(0, 2).join(', ')}, and ${keywords.length - 2} other${keywords.length - 2 === 1 ? '' : 's'}`
 }
 
-function SavedNewsHeader({ currentUser, savedArticles }) {
+function SavedNewsHeader({ savedArticles }) {
+  const currentUser = useContext(CurrentUserContext)
   const articleCount = savedArticles.length
 
   return (
