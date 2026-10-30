@@ -107,7 +107,7 @@ function LoginModal({ isOpen, onClose, onRegisterClick, onLogin }) {
           type="email"
           placeholder="Enter email"
           autoComplete="email"
-          autoFocus
+          data-modal-autofocus
           value={values.email}
           aria-describedby="login-email-error"
           aria-invalid={Boolean(errors.email)}

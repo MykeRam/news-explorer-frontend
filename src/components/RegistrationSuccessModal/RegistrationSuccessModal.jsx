@@ -1,18 +1,11 @@
-import { useEffect } from 'react'
+import { useRef } from 'react'
+import useModal from '../../hooks/useModal.js'
 import '../ModalWithForm/ModalWithForm.css'
 import './RegistrationSuccessModal.css'
 
 function RegistrationSuccessModal({ isOpen, onClose, onSignInClick }) {
-  useEffect(() => {
-    if (!isOpen) return undefined
-
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') onClose()
-    }
-
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
+  const containerRef = useRef(null)
+  useModal(isOpen, onClose, containerRef)
 
   if (!isOpen) return null
 
@@ -24,6 +17,7 @@ function RegistrationSuccessModal({ isOpen, onClose, onSignInClick }) {
     <div className="modal" onMouseDown={handleOverlayMouseDown}>
       <section
         className="modal__container registration-success"
+        ref={containerRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="registration-success-title"
@@ -44,6 +38,7 @@ function RegistrationSuccessModal({ isOpen, onClose, onSignInClick }) {
           className="modal__alternate-button registration-success__sign-in"
           type="button"
           onClick={onSignInClick}
+          data-modal-autofocus
         >
           Sign in
         </button>
