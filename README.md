@@ -19,7 +19,7 @@ News Explorer is a responsive React application that lets users search for recen
 
 Stage 3 integration is in progress on `stage-3-frontend-auth`. This branch uses React Router 5 and builds for the root path on the planned Google Cloud deployment. The deployed Stage 1 site remains at the link above.
 
-Authentication and saved articles currently still use the Stage 1 mock API. Stage 1 uses local storage and asynchronous mock responses for authentication and saved-article behavior. These utilities provide the frontend interface that can later be connected to the project backend.
+The real backend request module is ready in `src/utils/MainApi.js`, covering signup, signin, profile, and saved-article requests. The UI currently still uses `src/utils/mockMainApi.js` until session and authentication integration is implemented. Stage 1 uses local storage and asynchronous mock responses for authentication and saved-article behavior. These utilities provide the frontend interface that can later be connected to the project backend.
 
 ## Technologies
 

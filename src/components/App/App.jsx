@@ -19,7 +19,7 @@ import {
   loginUser,
   registerUser,
   saveArticle,
-} from '../../utils/mainApi.js'
+} from '../../utils/mockMainApi.js'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
 
 const SEARCH_ERROR_MESSAGE =
