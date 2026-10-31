@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import './RegisterModal.css'
 import ModalWithForm from '../ModalWithForm/ModalWithForm.jsx'
 import {
-  validateRegistrationField,
-  REGISTRATION_PASSWORD_MIN_LENGTH,
-  REGISTRATION_NAME_MIN_LENGTH,
-  REGISTRATION_NAME_MAX_LENGTH,
-} from '../../utils/registrationValidation.js'
+  validateAuthField,
+  PASSWORD_MIN_LENGTH,
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+} from '../../utils/authValidation.js'
 
 const getInputError = ({ name, value, validity }) =>
-  validateRegistrationField(name, value) ||
+  validateAuthField(name, value) ||
   (validity.typeMismatch ? 'Please enter a valid email address.' : '')
 
 function RegisterModal({ isOpen, onClose, onLoginClick, onRegister, onSuccess }) {
@@ -33,7 +33,7 @@ function RegisterModal({ isOpen, onClose, onLoginClick, onRegister, onSuccess })
   }, [isOpen])
 
   const isFormValid = Object.entries(values)
-    .every(([name, value]) => !validateRegistrationField(name, value)) &&
+    .every(([name, value]) => !validateAuthField(name, value)) &&
     !Object.values(errors).some(Boolean)
 
   const handleChange = (event) => {
@@ -135,7 +135,7 @@ function RegisterModal({ isOpen, onClose, onLoginClick, onRegister, onSuccess })
           type="password"
           placeholder="Enter password"
           autoComplete="new-password"
-          minLength={REGISTRATION_PASSWORD_MIN_LENGTH}
+          minLength={PASSWORD_MIN_LENGTH}
           required
         />
         <span className="modal__input-error" id="register-password-error" aria-live="polite">
@@ -157,8 +157,8 @@ function RegisterModal({ isOpen, onClose, onLoginClick, onRegister, onSuccess })
           type="text"
           placeholder="Enter your username"
           autoComplete="name"
-          minLength={REGISTRATION_NAME_MIN_LENGTH}
-          maxLength={REGISTRATION_NAME_MAX_LENGTH}
+          minLength={USERNAME_MIN_LENGTH}
+          maxLength={USERNAME_MAX_LENGTH}
           required
         />
         <span className="modal__input-error" id="register-name-error" aria-live="polite">

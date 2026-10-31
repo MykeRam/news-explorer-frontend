@@ -63,6 +63,7 @@ const formatSavedArticle = (article) => ({
 function App() {
   const history = useHistory()
   const sessionGeneration = useRef(0)
+  const loginAttempt = useRef(null)
   const [sessionAttempt, setSessionAttempt] = useState(0)
   const [sessionError, setSessionError] = useState('')
   const [articleError, setArticleError] = useState('')
@@ -116,6 +117,7 @@ function App() {
           (event.key === JWT_STORAGE_KEY || event.key === null)) {
         // Invalidate old responses immediately, before React runs the next effect.
         sessionGeneration.current += 1
+        loginAttempt.current = null
         setCurrentUser(null)
         setSavedArticles([])
         setPendingArticleUrls([])
@@ -131,11 +133,22 @@ function App() {
   }, [sessionAttempt])
 
   const handleSignInClick = useCallback(() => setActiveModal('login'), [])
-  const handleRegisterClick = () => setActiveModal('register')
+  const handleRegisterClick = () => {
+    handleCloseModal()
+    setActiveModal('register')
+  }
   const handleRegistrationSuccess = () => setActiveModal('registration-success')
-  const handleCloseModal = () => setActiveModal(null)
+  const handleCloseModal = () => {
+    if (loginAttempt.current !== null) {
+      sessionGeneration.current += 1
+      loginAttempt.current = null
+      setIsAuthChecking(false)
+    }
+    setActiveModal(null)
+  }
   const handleLogin = (credentials) => {
     const generation = ++sessionGeneration.current
+    loginAttempt.current = generation
     localStorage.removeItem(JWT_STORAGE_KEY)
     setCurrentUser(null)
     setSavedArticles([])
@@ -145,16 +158,23 @@ function App() {
     setIsAuthChecking(true)
 
     return mainApi.loginUser(credentials)
-      .then(({ token }) => loadSession(token).then((session) => ({ ...session, token })))
+      .then(({ token }) => {
+        if (generation !== sessionGeneration.current) throw new DOMException('Sign in canceled', 'AbortError')
+        return loadSession(token).then((session) => ({ ...session, token }))
+      })
       .then(({ token, user, articles: storedArticles }) => {
         if (generation !== sessionGeneration.current) return
         localStorage.setItem(JWT_STORAGE_KEY, token)
         setCurrentUser(user)
         setSavedArticles(storedArticles.map(formatSavedArticle))
+        loginAttempt.current = null
         handleCloseModal()
       })
       .finally(() => {
-        if (generation === sessionGeneration.current) setIsAuthChecking(false)
+        if (generation === sessionGeneration.current) {
+          loginAttempt.current = null
+          setIsAuthChecking(false)
+        }
       })
   }
   const handleRegister = (userData) => mainApi.registerUser(userData)
@@ -299,7 +319,7 @@ function App() {
               onUnauthorized={handleSignInClick}
             >
               <SavedNews
-                    onSignInClick={handleSignInClick}
+                onSignInClick={handleSignInClick}
                 onLogout={handleLogout}
                 savedArticles={savedArticles}
                 pendingArticleUrls={pendingArticleUrls}
