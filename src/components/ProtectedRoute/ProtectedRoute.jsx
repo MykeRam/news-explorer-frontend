@@ -1,14 +1,15 @@
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
+import CurrentUserContext from '../../contexts/CurrentUserContext.js'
 import { Redirect } from 'react-router-dom'
 import Preloader from '../Preloader/Preloader.jsx'
 
 function ProtectedRoute({
-  isLoggedIn,
   isAuthChecking,
   sessionError,
   onUnauthorized,
   children,
 }) {
+  const isLoggedIn = Boolean(useContext(CurrentUserContext))
   useEffect(() => {
     if (!isAuthChecking && !sessionError && !isLoggedIn) {
       onUnauthorized()

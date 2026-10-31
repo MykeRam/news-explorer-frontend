@@ -313,7 +313,6 @@ function App() {
           </Route>
           <Route path="/saved-news">
             <ProtectedRoute
-              isLoggedIn={Boolean(currentUser)}
               isAuthChecking={isAuthChecking}
               sessionError={sessionError}
               onUnauthorized={handleSignInClick}

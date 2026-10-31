@@ -38,6 +38,8 @@ The frontend now uses `src/utils/MainApi.js` for backend requests. App owns `cur
 - `/` — search for news and view results
 - `/saved-news` — view saved articles after signing in
 
+The protected route reads authentication from CurrentUserContext, waits for stored-token verification, and redirects signed-out visitors home with the login dialog open. Logout clears private data and blocks saved-page access through browser history.
+
 ## Run the project locally
 
 1. Clone the repository and enter the project directory:
