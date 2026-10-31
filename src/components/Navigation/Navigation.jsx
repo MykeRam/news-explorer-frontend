@@ -15,6 +15,7 @@ function Navigation({
     <nav
       className={`navigation navigation_theme_${theme}${isOpen ? ' navigation_open' : ''}`}
       aria-label="Main navigation"
+      id="main-navigation"
     >
       <NavLink
         className="navigation__link"

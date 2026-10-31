@@ -1,10 +1,25 @@
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import CurrentUserContext from '../../contexts/CurrentUserContext.js'
 import './Header.css'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Navigation from '../Navigation/Navigation.jsx'
 
 function Header({ theme = 'dark', onSignInClick, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const currentUser = useContext(CurrentUserContext)
+  const { pathname } = useLocation()
+  const userEmail = currentUser?.email
+
+  useEffect(() => { setIsMenuOpen(false) }, [pathname, userEmail])
+
+  useEffect(() => {
+    if (!isMenuOpen) return undefined
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setIsMenuOpen(false)
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isMenuOpen])
 
   const handleSignInClick = () => {
     setIsMenuOpen(false)
@@ -25,6 +40,7 @@ function Header({ theme = 'dark', onSignInClick, onLogout }) {
           className="header__logo"
           to="/"
           aria-label="NewsExplorer home"
+          onClick={() => setIsMenuOpen(false)}
         >
           NewsExplorer
         </Link>
@@ -33,6 +49,7 @@ function Header({ theme = 'dark', onSignInClick, onLogout }) {
           type="button"
           aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={isMenuOpen}
+          aria-controls="main-navigation"
           onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
         >
           <span className="header__menu-line" />
