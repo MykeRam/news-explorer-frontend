@@ -16,54 +16,18 @@ import mainApi from '../../utils/MainApi.js'
 import { loadSession } from '../../utils/session.js'
 import { JWT_STORAGE_KEY, SESSION_ERROR_MESSAGE } from '../../utils/config.js'
 import CurrentUserContext from '../../contexts/CurrentUserContext.js'
+import { formatSearchArticles, formatSavedArticle, createArticlePayload, getArticleErrorMessage } from '../../utils/articles.js'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
 
 const SEARCH_ERROR_MESSAGE =
   'Sorry, something went wrong during the request. There may be a connection issue or the server may be down. Please try again later.'
 
-const formatArticleDate = (publishedAt) => {
-  const dateOnly = typeof publishedAt === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(publishedAt)
-  const date = dateOnly
-    ? new Date(...publishedAt.split('-').map((part, index) => Number(part) - (index === 1 ? 1 : 0)))
-    : new Date(publishedAt)
-
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
-
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
-const formatArticle = (article, index) => ({
-  id: `${article.url || article.title}-${index}`,
-  image: article.urlToImage || sitSpotImage,
-  // Article thumbnails are supplementary; the card already exposes the
-  // headline, summary, and an explicitly labeled article link to assistive tech.
-  imageAlt: '',
-  date: formatArticleDate(article.publishedAt),
-  title: article.title || 'Untitled article',
-  description: article.description || '',
-  source: article.source?.name || 'Unknown source',
-  url: article.url || '',
-})
-
-const formatSavedArticle = (article) => ({
-  ...article,
-  id: article._id,
-  url: article.link,
-  description: article.text,
-  imageAlt: '',
-  date: formatArticleDate(article.date),
-})
-
 function App() {
   const history = useHistory()
   const sessionGeneration = useRef(0)
   const loginAttempt = useRef(null)
+  const pendingArticleRequests = useRef(new Map())
+  const searchGeneration = useRef(0)
   const [sessionAttempt, setSessionAttempt] = useState(0)
   const [sessionError, setSessionError] = useState('')
   const [articleError, setArticleError] = useState('')
@@ -75,7 +39,6 @@ function App() {
   const [searchError, setSearchError] = useState('')
   const [articles, setArticles] = useState([])
   const [savedArticles, setSavedArticles] = useState([])
-  const [currentKeyword, setCurrentKeyword] = useState('')
   const [pendingArticleUrls, setPendingArticleUrls] = useState([])
 
   useEffect(() => {
@@ -87,6 +50,7 @@ function App() {
     setCurrentUser(null)
     setSavedArticles([])
     setPendingArticleUrls([])
+    pendingArticleRequests.current.clear()
     setArticleError('')
     setSessionError('')
     setIsAuthChecking(Boolean(token))
@@ -121,6 +85,7 @@ function App() {
         setCurrentUser(null)
         setSavedArticles([])
         setPendingArticleUrls([])
+        pendingArticleRequests.current.clear()
         setIsAuthChecking(Boolean(localStorage.getItem(JWT_STORAGE_KEY)))
         setSessionAttempt((attempt) => attempt + 1)
       }
@@ -153,6 +118,7 @@ function App() {
     setCurrentUser(null)
     setSavedArticles([])
     setPendingArticleUrls([])
+    pendingArticleRequests.current.clear()
     setSessionError('')
     setArticleError('')
     setIsAuthChecking(true)
@@ -184,6 +150,7 @@ function App() {
     setCurrentUser(null)
     setSavedArticles([])
     setPendingArticleUrls([])
+    pendingArticleRequests.current.clear()
     setSessionError('')
     setArticleError('')
     setIsAuthChecking(false)
@@ -191,7 +158,8 @@ function App() {
     history.replace('/')
   }
   const handleSearch = (query) => {
-    setCurrentKeyword(query)
+    const generation = ++searchGeneration.current
+    setArticleError('')
     setHasSearched(true)
     setIsLoading(true)
     setSearchError('')
@@ -199,74 +167,60 @@ function App() {
 
     return getNews(query)
       .then((data) => {
-        setArticles(data.articles.map(formatArticle))
+        if (generation === searchGeneration.current) {
+          setArticles(formatSearchArticles(data.articles, query, sitSpotImage))
+        }
       })
       .catch(() => {
-        setSearchError(SEARCH_ERROR_MESSAGE)
+        if (generation === searchGeneration.current) setSearchError(SEARCH_ERROR_MESSAGE)
       })
       .finally(() => {
-        setIsLoading(false)
+        if (generation === searchGeneration.current) setIsLoading(false)
       })
   }
 
   const handleToggleArticleSave = (article) => {
     const token = localStorage.getItem(JWT_STORAGE_KEY)
-
     if (!token || !currentUser) {
-      handleSignInClick()
+      handleRegisterClick()
       return Promise.resolve()
     }
-
-    const savedArticle = savedArticles.find(
-      (storedArticle) => storedArticle.url === article.url,
-    )
-
+    if (pendingArticleRequests.current.has(article.url)) return Promise.resolve()
+    const savedArticle = savedArticles.find((stored) => stored.url === article.url)
     const generation = sessionGeneration.current
+    const operation = {}
     const isCurrent = () => generation === sessionGeneration.current &&
       localStorage.getItem(JWT_STORAGE_KEY) === token
+    pendingArticleRequests.current.set(article.url, operation)
     setArticleError('')
-    setPendingArticleUrls((currentUrls) => [...currentUrls, article.url])
+    setPendingArticleUrls((urls) => [...urls, article.url])
 
-    const request = savedArticle
-      ? mainApi.deleteArticle(token, savedArticle._id).then(() => {
-          if (!isCurrent()) return
-          setSavedArticles((currentArticles) =>
-            currentArticles.filter(
-              (storedArticle) => storedArticle._id !== savedArticle._id,
-            ),
-          )
+    return Promise.resolve()
+      .then(() => savedArticle
+        ? mainApi.deleteArticle(token, savedArticle._id)
+        : mainApi.saveArticle(token, createArticlePayload(article)))
+      .then((storedArticle) => {
+        if (!isCurrent()) return
+        setSavedArticles((current) => {
+          if (!isCurrent()) return current
+          if (savedArticle) return current.filter((stored) => stored._id !== savedArticle._id)
+          return [formatSavedArticle(storedArticle), ...current.filter((stored) => stored.url !== article.url)]
         })
-      : mainApi.saveArticle(token, {
-          keyword: currentKeyword,
-          title: article.title,
-          text: article.description || article.title,
-          date: article.date,
-          source: article.source,
-          link: article.url,
-          image: new URL(article.image, window.location.origin).href,
-        }).then((storedArticle) => {
-          if (!isCurrent()) return
-          setSavedArticles((currentArticles) => [
-            formatSavedArticle(storedArticle),
-            ...currentArticles,
-          ])
-        })
-
-    return request
+      })
       .catch((error) => {
         if (!isCurrent()) return
         if (error.status === 401) {
           handleLogout()
           handleSignInClick()
         } else {
-          setArticleError(error.message || 'Unable to update saved articles. Please try again.')
+          setArticleError(getArticleErrorMessage(error))
         }
       })
       .finally(() => {
-        if (!isCurrent()) return
-        setPendingArticleUrls((currentUrls) =>
-          currentUrls.filter((url) => url !== article.url),
-        )
+        if (pendingArticleRequests.current.get(article.url) === operation) {
+          pendingArticleRequests.current.delete(article.url)
+          if (isCurrent()) setPendingArticleUrls((urls) => urls.filter((url) => url !== article.url))
+        }
       })
   }
 

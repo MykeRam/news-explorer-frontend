@@ -8,8 +8,10 @@ function NewsCard({
   isSavedPage = false,
   onToggleSave,
 }) {
-  const handleSaveClick = () => {
-    if (isLoggedIn && !isSaving) {
+  const handleSaveClick = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (!isSaving) {
       onToggleSave(article)
     }
   }
@@ -53,7 +55,9 @@ function NewsCard({
                 ? `Remove ${article.title} from saved articles`
                 : `${isSaved ? 'Remove' : 'Save'} ${article.title}`
             }
-            disabled={!isLoggedIn || isSaving}
+            aria-pressed={isSavedPage ? undefined : isSaved}
+            aria-busy={isSaving}
+            disabled={isSaving}
             onClick={handleSaveClick}
           >
             {isSavedPage ? (
