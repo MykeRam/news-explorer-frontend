@@ -98,7 +98,7 @@ The interface is based on the [TripleTen final project design in Figma](https://
 
 ## Deployment
 
-The frontend is deployed to GitHub Pages through a GitHub Actions workflow. Pushes to the `stage-1-frontend-api` branch trigger a production build and deployment.
+The Stage 1 frontend is deployed to GitHub Pages through a GitHub Actions workflow. Stage 3 targets `https://news-explorer-mykeram.mooo.com` on the existing Google Cloud VM; DNS, HTTPS deployment, and production acceptance checks are pending. See [the Google Cloud deployment guide](deploy/README.md) and [initial Nginx configuration](deploy/nginx.conf).
 
 ## Author
 
