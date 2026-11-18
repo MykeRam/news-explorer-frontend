@@ -4,7 +4,9 @@ News Explorer is a responsive React application that lets users search for recen
 
 ## Live project
 
-[View the deployed News Explorer application](https://mykeram.github.io/news-explorer-frontend/)
+[View the deployed News Explorer application](https://news-explorer-mykeram.mooo.com/)
+
+[Backend API](https://api.news-explorer-mykeram.mooo.com/)
 
 ## Features
 
@@ -17,9 +19,9 @@ News Explorer is a responsive React application that lets users search for recen
 - Save and remove articles and summarize their search keywords
 - Navigate with responsive desktop, tablet, and mobile layouts
 
-Stage 3 integration is in progress on `stage-3-frontend-auth`. This branch uses React Router 5 and builds for the root path on the planned Google Cloud deployment. The deployed Stage 1 site remains at the link above.
+Stage 3 is on the `stage-3-frontend-auth` review branch. It uses React Router 5 and builds for the root path. The full-stack frontend and API are deployed on Google Cloud; the branch stays unmerged until instructor approval.
 
-The frontend now uses `src/utils/MainApi.js` for backend requests. App owns `currentUser` and provides it through `CurrentUserContext.Provider`; navigation and saved-page greetings consume that context. Stored JWTs are verified against `/users/me`, followed by a single saved-article load. Invalid tokens are cleared; temporary session failures retain the token and offer Retry session or Sign out. Login, logout, cross-tab account changes, and stale responses share the same session handling. Registration and login validate fields as they change, enforce backend password/name limits, and prevent repeated submissions. Registration displays backend errors and offers Sign in after success. Login reports credential, connection, and profile-loading errors; closing or switching away from a pending login prevents late responses from signing the user in. Authentication dialogs support keyboard focus containment, Escape/backdrop dismissal, and focus return. Search cards now save and remove articles through the backend, preserve their original keywords and publication dates, and synchronize bookmarks with Saved Articles. Pending operations prevent duplicate requests; failures preserve saved data and show useful validation, connection, or rate-limit feedback. Saved Articles shows the current count and ranks keywords by saved-article frequency, with an alphabetical tie-breaker. It lists all keywords when there are at most three, or the top two and the remaining distinct-keyword count otherwise. Counts and rankings update after successful saves/deletions. Production deployment and final acceptance remain pending.
+The frontend now uses `src/utils/MainApi.js` for backend requests. App owns `currentUser` and provides it through `CurrentUserContext.Provider`; navigation and saved-page greetings consume that context. Stored JWTs are verified against `/users/me`, followed by a single saved-article load. Invalid tokens are cleared; temporary session failures retain the token and offer Retry session or Sign out. Login, logout, cross-tab account changes, and stale responses share the same session handling. Registration and login validate fields as they change, enforce backend password/name limits, and prevent repeated submissions. Registration displays backend errors and offers Sign in after success. Login reports credential, connection, and profile-loading errors; closing or switching away from a pending login prevents late responses from signing the user in. Authentication dialogs support keyboard focus containment, Escape/backdrop dismissal, and focus return. Search cards now save and remove articles through the backend, preserve their original keywords and publication dates, and synchronize bookmarks with Saved Articles. Pending operations prevent duplicate requests; failures preserve saved data and show useful validation, connection, or rate-limit feedback. Saved Articles shows the current count and ranks keywords by saved-article frequency, with an alphabetical tie-breaker. It lists all keywords when there are at most three, or the top two and the remaining distinct-keyword count otherwise. Counts and rankings update after successful saves/deletions. Production HTTPS deployment is complete; the final checklist and instructor review remain pending.
 
 ## Technologies
 
@@ -31,7 +33,7 @@ The frontend now uses `src/utils/MainApi.js` for backend requests. App owns `cur
 - Vite
 - ESLint
 - News API
-- GitHub Actions and GitHub Pages
+- Nginx, Google Cloud, and Let's Encrypt HTTPS
 
 ## Routes
 
@@ -98,7 +100,7 @@ The interface is based on the [TripleTen final project design in Figma](https://
 
 ## Deployment
 
-The Stage 1 frontend is deployed to GitHub Pages through a GitHub Actions workflow. Stage 3 targets `https://news-explorer-mykeram.mooo.com` on the existing Google Cloud VM; DNS, HTTPS deployment, and production acceptance checks are pending. See [the Google Cloud deployment guide](deploy/README.md) and [initial Nginx configuration](deploy/nginx.conf).
+The full-stack application is deployed on the existing Google Cloud VM at `https://news-explorer-mykeram.mooo.com`. Nginx serves the Vite build with direct-route fallback and redirects HTTP to HTTPS. The API allows the frontend origin through CORS. Certificate renewal dry runs passed for both frontend and API. The earlier GitHub Pages workflow remains scoped to the Stage 1 branch. See [the Google Cloud deployment guide](deploy/README.md) and [initial Nginx configuration](deploy/nginx.conf).
 
 ## Author
 

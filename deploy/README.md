@@ -1,6 +1,9 @@
 # Google Cloud deployment
 
-Target frontend: `https://news-explorer-mykeram.mooo.com` (DNS and deployment pending).
+Frontend: `https://news-explorer-mykeram.mooo.com`.
+
+Release `6824bbe` is installed on the existing VM. Frontend DNS, valid HTTPS, HTTP redirects, SPA fallback, production CORS, and simulated certificate renewals for both frontend and API have been verified. Final acceptance and PR submission are tracked separately.
+
 Backend: `https://api.news-explorer-mykeram.mooo.com`.
 
 Use the existing VM in project `news-explorer-511715`, zone `us-central1-a`, instance `instance-20261017-230220`. Keep frontend work on `stage-3-frontend-auth` until instructor approval.
