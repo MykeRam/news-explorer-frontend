@@ -1,6 +1,7 @@
-const NEWS_API_URL = 'https://newsapi.org/v2/everything'
-const NEWS_API_PROXY_URL = 'https://news-api-proxy.up.railway.app/news/v2/everything'
-const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY
+import {
+  NEWS_API_URL, NEWS_API_PROXY_URL, NEWS_API_KEY, NEWS_SEARCH_DAYS,
+  NEWS_PAGE_SIZE, NEWS_LANGUAGE, NEWS_SORT_ORDER,
+} from './config.js'
 
 const getDateString = (date) => date.toISOString().split('T')[0]
 
@@ -8,7 +9,7 @@ const getSearchDates = () => {
   const to = new Date()
   const from = new Date(to)
 
-  from.setDate(from.getDate() - 7)
+  from.setDate(from.getDate() - NEWS_SEARCH_DAYS)
 
   return {
     from: getDateString(from),
@@ -49,9 +50,9 @@ export const getNews = (query) => {
     q: trimmedQuery,
     from,
     to,
-    language: 'en',
-    sortBy: 'publishedAt',
-    pageSize: '100',
+    language: NEWS_LANGUAGE,
+    sortBy: NEWS_SORT_ORDER,
+    pageSize: String(NEWS_PAGE_SIZE),
     apiKey: NEWS_API_KEY,
   })
   const baseUrl = import.meta.env.PROD ? NEWS_API_PROXY_URL : NEWS_API_URL

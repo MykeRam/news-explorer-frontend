@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import './RegisterModal.css'
 import ModalWithForm from '../ModalWithForm/ModalWithForm.jsx'
 import {
-  validateAuthField,
   PASSWORD_MIN_LENGTH,
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
-} from '../../utils/authValidation.js'
+  INVALID_EMAIL_MESSAGE,
+} from '../../utils/config.js'
+import { validateAuthField } from '../../utils/authValidation.js'
 
 const getInputError = ({ name, value, validity }) =>
   validateAuthField(name, value) ||
-  (validity.typeMismatch ? 'Please enter a valid email address.' : '')
+  (validity.typeMismatch ? INVALID_EMAIL_MESSAGE : '')
 
 function RegisterModal({ isOpen, onClose, onLoginClick, onRegister, onSuccess }) {
   const [values, setValues] = useState({ email: '', password: '', name: '' })

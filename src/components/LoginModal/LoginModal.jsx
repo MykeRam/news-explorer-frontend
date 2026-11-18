@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import './LoginModal.css'
 import ModalWithForm from '../ModalWithForm/ModalWithForm.jsx'
 
-import { validateAuthField, PASSWORD_MIN_LENGTH } from '../../utils/authValidation.js'
+import { validateAuthField } from '../../utils/authValidation.js'
+import { PASSWORD_MIN_LENGTH } from '../../utils/config.js'
 
 function LoginModal({ isOpen, onClose, onRegisterClick, onLogin }) {
   const [values, setValues] = useState({ email: '', password: '' })

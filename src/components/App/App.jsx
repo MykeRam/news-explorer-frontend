@@ -14,13 +14,10 @@ import SearchForm from '../SearchForm/SearchForm.jsx'
 import { getNews } from '../../utils/newsApi.js'
 import mainApi from '../../utils/MainApi.js'
 import { loadSession } from '../../utils/session.js'
-import { JWT_STORAGE_KEY, SESSION_ERROR_MESSAGE } from '../../utils/config.js'
+import { JWT_STORAGE_KEY, SESSION_ERROR_MESSAGE, SEARCH_ERROR_MESSAGE, HTTP_STATUS } from '../../utils/config.js'
 import CurrentUserContext from '../../contexts/CurrentUserContext.js'
 import { formatSearchArticles, formatSavedArticle, createArticlePayload, getArticleErrorMessage } from '../../utils/articles.js'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
-
-const SEARCH_ERROR_MESSAGE =
-  'Sorry, something went wrong during the request. There may be a connection issue or the server may be down. Please try again later.'
 
 function App() {
   const history = useHistory()
@@ -65,10 +62,10 @@ function App() {
         })
         .catch((error) => {
           if (!isCurrent()) return
-          if (error.status === 401) {
+          if (error.status === HTTP_STATUS.UNAUTHORIZED) {
             localStorage.removeItem(JWT_STORAGE_KEY)
           } else {
-            setSessionError(error.status === 429 ? error.message : SESSION_ERROR_MESSAGE)
+            setSessionError(error.status === HTTP_STATUS.TOO_MANY_REQUESTS ? error.message : SESSION_ERROR_MESSAGE)
           }
         })
         .finally(() => {
@@ -209,7 +206,7 @@ function App() {
       })
       .catch((error) => {
         if (!isCurrent()) return
-        if (error.status === 401) {
+        if (error.status === HTTP_STATUS.UNAUTHORIZED) {
           handleLogout()
           handleSignInClick()
         } else {

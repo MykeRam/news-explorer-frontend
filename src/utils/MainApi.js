@@ -1,4 +1,4 @@
-import { MAIN_API_BASE_URL } from './config.js'
+import { MAIN_API_BASE_URL, HTTP_STATUS, INVALID_RESPONSE_MESSAGE } from './config.js'
 
 export class ApiError extends Error {
   constructor(message, status, data, retryAfter) {
@@ -37,27 +37,27 @@ export class MainApi {
       method,
       headers,
       ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-    }).then(async (response) => {
-      const text = await response.text()
-      let data = null
-      try {
-        data = text ? JSON.parse(text) : null
-      } catch {
-        if (response.ok) {
-          throw new ApiError('The server returned an invalid response.', response.status)
-        }
-      }
+    }).then((response) => {
+      if (response.status === HTTP_STATUS.NO_CONTENT) return null
 
-      if (!response.ok) {
-        throw new ApiError(
-          getErrorMessage(data, response.status),
-          response.status,
-          data,
-          response.headers.get('Retry-After'),
-        )
-      }
-
-      return data
+      return response.json()
+        .catch(() => {
+          if (response.ok) {
+            throw new ApiError(INVALID_RESPONSE_MESSAGE, response.status)
+          }
+          return null
+        })
+        .then((data) => {
+          if (!response.ok) {
+            throw new ApiError(
+              getErrorMessage(data, response.status),
+              response.status,
+              data,
+              response.headers.get('Retry-After'),
+            )
+          }
+          return data
+        })
     })
   }
 

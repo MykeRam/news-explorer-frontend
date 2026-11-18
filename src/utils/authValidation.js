@@ -1,11 +1,12 @@
-export const PASSWORD_MIN_LENGTH = 8
-export const USERNAME_MIN_LENGTH = 2
-export const USERNAME_MAX_LENGTH = 30
+import {
+  PASSWORD_MIN_LENGTH, USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH,
+  EMAIL_PATTERN, INVALID_EMAIL_MESSAGE,
+} from './config.js'
 
 export const validateAuthField = (name, value) => {
   if (!value.trim()) return `Please enter your ${name === 'name' ? 'username' : name}.`
-  if (name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-    return 'Please enter a valid email address.'
+  if (name === 'email' && !EMAIL_PATTERN.test(value)) {
+    return INVALID_EMAIL_MESSAGE
   }
   if (name === 'password' && value.length < PASSWORD_MIN_LENGTH) {
     return `Password must contain at least ${PASSWORD_MIN_LENGTH} characters.`

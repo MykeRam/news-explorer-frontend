@@ -1,4 +1,4 @@
-import { FALLBACK_ARTICLE_IMAGE_URL } from './config.js'
+import { FALLBACK_ARTICLE_IMAGE_URL, HTTP_STATUS } from './config.js'
 
 const httpUrl = (value) => {
   try {
@@ -19,14 +19,18 @@ export const formatArticleDate = (value) => {
 }
 
 export const formatSearchArticles = (articles, keyword, fallbackImage) => {
-  const links = new Set()
-  return articles.flatMap((article, index) => {
+  const identifiers = new Set()
+  return articles.flatMap((article) => {
     const url = httpUrl(article.url)
-    if (url && links.has(url)) return []
-    if (url) links.add(url)
+    const id = url || `article:${JSON.stringify([
+      article.url || '', article.title || '', article.publishedAt || '',
+      article.description || '', article.source?.name || '', article.urlToImage || '',
+    ])}`
+    if (identifiers.has(id)) return []
+    identifiers.add(id)
     const imageUrl = httpUrl(article.urlToImage) || FALLBACK_ARTICLE_IMAGE_URL
     return [{
-      id: url || `${article.title}-${article.publishedAt}-${index}`,
+      id,
       url,
       keyword: keyword.trim(),
       image: httpUrl(article.urlToImage) || fallbackImage,
@@ -65,7 +69,7 @@ export const createArticlePayload = (article) => {
 }
 
 export const getArticleErrorMessage = (error) => {
-  if (error.status === 429) {
+  if (error.status === HTTP_STATUS.TOO_MANY_REQUESTS) {
     const retry = Number(error.retryAfter)
     return retry > 0
       ? `Too many requests. Please try again in ${retry} seconds.`
