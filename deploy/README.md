@@ -2,7 +2,7 @@
 
 Frontend: `https://news-explorer-mykeram.mooo.com`.
 
-Release `8b2fdac` is installed on the existing VM. Frontend DNS, valid HTTPS, HTTP redirects, SPA fallback, production CORS, and simulated certificate renewals for both frontend and API have been verified. The checklist fixes were verified with 16 focused checks and a live smoke test covering protected-route redirection, login error feedback, real search, three-card batches, signed-out save prompting, and password validation. Served HTML, JavaScript, and CSS match the reviewed build. PR submission remains on hold for approval.
+Release `8b2fdac` is installed on the existing VM. Frontend DNS, valid HTTPS, HTTP redirects, SPA fallback, production CORS, and simulated certificate renewals for both frontend and API have been verified. The checklist fixes were verified with 16 focused checks and a live smoke test covering protected-route redirection, login error feedback, real search, three-card batches, signed-out save prompting, and password validation. Served HTML, JavaScript, and CSS match the reviewed build. Stage 3 has been submitted through [PR #2](https://github.com/MykeRam/news-explorer-frontend/pull/2) and is awaiting instructor review; the branch remains unmerged.
 
 Backend: `https://api.news-explorer-mykeram.mooo.com`.
 

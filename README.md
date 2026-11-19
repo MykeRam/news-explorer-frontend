@@ -19,9 +19,18 @@ News Explorer is a responsive React application that lets users search for recen
 - Save and remove articles and summarize their search keywords
 - Navigate with responsive desktop, tablet, and mobile layouts
 
-Stage 3 is on the `stage-3-frontend-auth` review branch. It uses React Router 5 and builds for the root path. The full-stack frontend and API are deployed on Google Cloud; the branch stays unmerged until instructor approval.
+Stage 3 has been submitted to TripleTen and is awaiting instructor review. [Pull request #2](https://github.com/MykeRam/news-explorer-frontend/pull/2) compares `stage-3-frontend-auth` with `main` and remains unmerged until approval.
 
-The frontend now uses `src/utils/MainApi.js` for backend requests. App owns `currentUser` and provides it through `CurrentUserContext.Provider`; navigation and saved-page greetings consume that context. Stored JWTs are verified against `/users/me`, followed by a single saved-article load. Invalid tokens are cleared; temporary session failures retain the token and offer Retry session or Sign out. Login, logout, cross-tab account changes, and stale responses share the same session handling. Registration and login validate fields as they change, enforce backend password/name limits, and prevent repeated submissions. Registration displays backend errors and offers Sign in after success. Login reports credential, connection, and profile-loading errors; closing or switching away from a pending login prevents late responses from signing the user in. Authentication dialogs support keyboard focus containment, Escape/backdrop dismissal, and focus return. Search cards now save and remove articles through the backend, preserve their original keywords and publication dates, and synchronize bookmarks with Saved Articles. Pending operations prevent duplicate requests; failures preserve saved data and show useful validation, connection, or rate-limit feedback. Saved Articles shows the current count and ranks keywords by saved-article frequency, with an alphabetical tie-breaker. It lists all keywords when there are at most three, or the top two and the remaining distinct-keyword count otherwise. Counts and rankings update after successful saves/deletions. Production HTTPS deployment is complete; the final checklist and instructor review remain pending.
+## Backend integration
+
+- `MainApi.js` uses Fetch and `response.json()` for registration, login, profile, and saved-article requests.
+- App owns `currentUser` and shares it through `CurrentUserContext.Provider`. Stored JWTs are verified with the server before private data is shown. Invalid tokens are cleared; temporary failures offer session retry or sign out.
+- Registration and login validate fields immediately, display server feedback, and prevent duplicate submissions. Dialogs support keyboard focus, Escape/backdrop dismissal, and focus return.
+- Saved articles synchronize with search bookmarks through API requests. Pending operations prevent duplicate requests, and failed saves/deletions preserve existing data.
+- Saved counts and keyword rankings update after successful changes. URL-less search results use stable content-based IDs; identical entries are deduplicated.
+- Shared application settings and constants are stored in `src/utils/config.js`.
+
+The frontend uses React Router 5 and builds for the root path on Google Cloud. Production HTTPS deployment and final checks are complete; instructor review remains pending.
 
 ## Technologies
 
@@ -37,8 +46,8 @@ The frontend now uses `src/utils/MainApi.js` for backend requests. App owns `cur
 
 ## Routes
 
-- `/` — search for news and view results
-- `/saved-news` — view saved articles after signing in
+- `/`: search for news and view results
+- `/saved-news`: view saved articles after signing in
 
 The protected route reads authentication from CurrentUserContext, waits for stored-token verification, and redirects signed-out visitors home with the login dialog open. Logout clears private data and blocks saved-page access through browser history.
 
@@ -79,16 +88,18 @@ The backend base URL is configured in `src/utils/config.js` and can be overridde
 
 ## Available scripts
 
-- `npm run dev` — start the Vite development server
-- `npm run build` — create a production build
-- `npm run preview` — preview the production build locally
-- `npm run lint` — check the project with ESLint
+- `npm run dev`: start the Vite development server
+- `npm run build`: create a production build
+- `npm run preview`: preview the production build locally
+- `npm run lint`: check the project with ESLint
 
 ## Project structure
 
 ```text
 src/
 ├── components/  React components and component styles
+├── contexts/    Shared current-user context
+├── hooks/       Reusable modal behavior
 ├── images/      Images and SVG icons
 ├── utils/       News API and application API utilities
 └── vendor/      Fonts and third-party styles
@@ -101,7 +112,3 @@ The interface is based on the [TripleTen final project design in Figma](https://
 ## Deployment
 
 The full-stack application is deployed on the existing Google Cloud VM at `https://news-explorer-mykeram.mooo.com`. Nginx serves the Vite build with direct-route fallback and redirects HTTP to HTTPS. The API allows the frontend origin through CORS. Certificate renewal dry runs passed for both frontend and API. The earlier GitHub Pages workflow remains scoped to the Stage 1 branch. See [the Google Cloud deployment guide](deploy/README.md) and [initial Nginx configuration](deploy/nginx.conf).
-
-## Author
-
-Michael Ramirez — [GitHub](https://github.com/MykeRam)
