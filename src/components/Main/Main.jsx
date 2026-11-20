@@ -4,7 +4,7 @@ import NewsCardList from '../NewsCardList/NewsCardList.jsx'
 import Preloader from '../Preloader/Preloader.jsx'
 import notFoundIcon from '../../images/not-found-icon.svg'
 
-const ARTICLES_PER_PAGE = 3
+import { ARTICLES_PER_PAGE } from '../../utils/config.js'
 
 function Main({
   articles,

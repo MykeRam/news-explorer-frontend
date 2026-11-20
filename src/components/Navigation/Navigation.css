@@ -2,6 +2,7 @@
   display: flex;
   align-items: stretch;
   min-height: 80px;
+  min-width: 0;
   gap: 34px;
 }
 
@@ -15,6 +16,7 @@
   font-weight: 500;
   line-height: 24px;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .navigation__link_active {
@@ -48,6 +50,8 @@
 
 .navigation__sign-in_authenticated {
   display: inline-flex;
+  min-width: 0;
+  max-width: 240px;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -66,7 +70,9 @@
 
 .navigation__sign-in_authenticated > span {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .navigation__sign-in:hover {
@@ -149,6 +155,7 @@
 
   .navigation__sign-in {
     width: 100%;
+    max-width: none;
     min-height: 56px;
     margin-top: 12px;
     font-size: 18px;

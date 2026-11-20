@@ -1,22 +1,10 @@
+import { useContext } from 'react'
+import CurrentUserContext from '../../contexts/CurrentUserContext.js'
 import './SavedNewsHeader.css'
+import { getKeywordSummary } from '../../utils/savedArticleSummary.js'
 
-function getKeywordSummary(savedArticles) {
-  const keywords = [
-    ...new Set(savedArticles.map((article) => article.keyword).filter(Boolean)),
-  ]
-
-  if (keywords.length === 0) {
-    return 'Save articles from search results to see them here.'
-  }
-
-  if (keywords.length <= 3) {
-    return `By keywords: ${keywords.join(', ')}`
-  }
-
-  return `By keywords: ${keywords.slice(0, 2).join(', ')}, and ${keywords.length - 2} other${keywords.length - 2 === 1 ? '' : 's'}`
-}
-
-function SavedNewsHeader({ currentUser, savedArticles }) {
+function SavedNewsHeader({ savedArticles }) {
+  const currentUser = useContext(CurrentUserContext)
   const articleCount = savedArticles.length
 
   return (
@@ -27,7 +15,9 @@ function SavedNewsHeader({ currentUser, savedArticles }) {
         {articleCount === 1 ? 'article' : 'articles'}
       </h1>
       <p className="saved-news-header__keywords">
-        {getKeywordSummary(savedArticles)}
+        {articleCount === 0
+          ? 'Save articles from search results to see them here.'
+          : <>By keywords: <strong>{getKeywordSummary(savedArticles)}</strong></>}
       </p>
     </section>
   )

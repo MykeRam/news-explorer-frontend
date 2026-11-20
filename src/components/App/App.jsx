@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import './App.css'
 import About from '../About/About.jsx'
 import Footer from '../Footer/Footer.jsx'
@@ -12,47 +12,22 @@ import RegistrationSuccessModal from '../RegistrationSuccessModal/RegistrationSu
 import SavedNews from '../SavedNews/SavedNews.jsx'
 import SearchForm from '../SearchForm/SearchForm.jsx'
 import { getNews } from '../../utils/newsApi.js'
-import {
-  checkToken,
-  deleteArticle,
-  getSavedArticles,
-  loginUser,
-  registerUser,
-  saveArticle,
-} from '../../utils/mainApi.js'
+import mainApi from '../../utils/MainApi.js'
+import { loadSession } from '../../utils/session.js'
+import { JWT_STORAGE_KEY, SESSION_ERROR_MESSAGE, SEARCH_ERROR_MESSAGE, HTTP_STATUS } from '../../utils/config.js'
+import CurrentUserContext from '../../contexts/CurrentUserContext.js'
+import { formatSearchArticles, formatSavedArticle, createArticlePayload, getArticleErrorMessage } from '../../utils/articles.js'
 import sitSpotImage from '../../images/article-sit-spot.jpg'
 
-const SEARCH_ERROR_MESSAGE =
-  'Sorry, something went wrong during the request. There may be a connection issue or the server may be down. Please try again later.'
-
-const formatArticleDate = (publishedAt) => {
-  const date = new Date(publishedAt)
-
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
-
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
-const formatArticle = (article, index) => ({
-  id: `${article.url || article.title}-${index}`,
-  image: article.urlToImage || sitSpotImage,
-  // Article thumbnails are supplementary; the card already exposes the
-  // headline, summary, and an explicitly labeled article link to assistive tech.
-  imageAlt: '',
-  date: formatArticleDate(article.publishedAt),
-  title: article.title || 'Untitled article',
-  description: article.description || '',
-  source: article.source?.name || 'Unknown source',
-  url: article.url || '',
-})
-
 function App() {
+  const history = useHistory()
+  const sessionGeneration = useRef(0)
+  const loginAttempt = useRef(null)
+  const pendingArticleRequests = useRef(new Map())
+  const searchGeneration = useRef(0)
+  const [sessionAttempt, setSessionAttempt] = useState(0)
+  const [sessionError, setSessionError] = useState('')
+  const [articleError, setArticleError] = useState('')
   const [activeModal, setActiveModal] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const [isAuthChecking, setIsAuthChecking] = useState(true)
@@ -61,60 +36,127 @@ function App() {
   const [searchError, setSearchError] = useState('')
   const [articles, setArticles] = useState([])
   const [savedArticles, setSavedArticles] = useState([])
-  const [currentKeyword, setCurrentKeyword] = useState('')
   const [pendingArticleUrls, setPendingArticleUrls] = useState([])
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt')
+    const generation = ++sessionGeneration.current
+    const token = localStorage.getItem(JWT_STORAGE_KEY)
+    const isCurrent = () => generation === sessionGeneration.current &&
+      localStorage.getItem(JWT_STORAGE_KEY) === token
 
-    if (!token) {
-      setIsAuthChecking(false)
-      return undefined
-    }
-
-    let isMounted = true
-
-    checkToken(token)
-      .then((user) => {
-        return getSavedArticles(token).then((storedArticles) => {
-          if (isMounted) {
-            setCurrentUser(user)
-            setSavedArticles(storedArticles)
-          }
-        })
-      })
-      .catch(() => localStorage.removeItem('jwt'))
-      .finally(() => {
-        if (isMounted) setIsAuthChecking(false)
-      })
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  const handleSignInClick = useCallback(() => setActiveModal('login'), [])
-  const handleRegisterClick = () => setActiveModal('register')
-  const handleRegistrationSuccess = () =>
-    setActiveModal('registration-success')
-  const handleCloseModal = () => setActiveModal(null)
-  const handleLogin = (credentials) =>
-    loginUser(credentials).then(({ token, user }) => {
-      localStorage.setItem('jwt', token)
-      return getSavedArticles(token).then((storedArticles) => {
-        setCurrentUser(user)
-        setSavedArticles(storedArticles)
-        handleCloseModal()
-      })
-    })
-  const handleRegister = (userData) => registerUser(userData)
-  const handleLogout = () => {
-    localStorage.removeItem('jwt')
     setCurrentUser(null)
     setSavedArticles([])
+    setPendingArticleUrls([])
+    pendingArticleRequests.current.clear()
+    setArticleError('')
+    setSessionError('')
+    setIsAuthChecking(Boolean(token))
+
+    if (token) {
+      loadSession(token)
+        .then(({ user, articles: storedArticles }) => {
+          if (!isCurrent()) return
+          setCurrentUser(user)
+          setActiveModal(null)
+          setSavedArticles(storedArticles.map(formatSavedArticle))
+        })
+        .catch((error) => {
+          if (!isCurrent()) return
+          if (error.status === HTTP_STATUS.UNAUTHORIZED) {
+            localStorage.removeItem(JWT_STORAGE_KEY)
+          } else {
+            setSessionError(error.status === HTTP_STATUS.TOO_MANY_REQUESTS ? error.message : SESSION_ERROR_MESSAGE)
+          }
+        })
+        .finally(() => {
+          if (generation === sessionGeneration.current) setIsAuthChecking(false)
+        })
+    }
+
+    const handleStorage = (event) => {
+      if (event.storageArea === localStorage &&
+          (event.key === JWT_STORAGE_KEY || event.key === null)) {
+        // Invalidate old responses immediately, before React runs the next effect.
+        sessionGeneration.current += 1
+        loginAttempt.current = null
+        setCurrentUser(null)
+        setSavedArticles([])
+        setPendingArticleUrls([])
+        pendingArticleRequests.current.clear()
+        setIsAuthChecking(Boolean(localStorage.getItem(JWT_STORAGE_KEY)))
+        setSessionAttempt((attempt) => attempt + 1)
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      sessionGeneration.current += 1
+    }
+  }, [sessionAttempt])
+
+  const handleSignInClick = useCallback(() => setActiveModal('login'), [])
+  const handleRegisterClick = () => {
+    handleCloseModal()
+    setActiveModal('register')
+  }
+  const handleRegistrationSuccess = () => setActiveModal('registration-success')
+  const handleCloseModal = () => {
+    if (loginAttempt.current !== null) {
+      sessionGeneration.current += 1
+      loginAttempt.current = null
+      setIsAuthChecking(false)
+    }
+    setActiveModal(null)
+  }
+  const handleLogin = (credentials) => {
+    const generation = ++sessionGeneration.current
+    loginAttempt.current = generation
+    localStorage.removeItem(JWT_STORAGE_KEY)
+    setCurrentUser(null)
+    setSavedArticles([])
+    setPendingArticleUrls([])
+    pendingArticleRequests.current.clear()
+    setSessionError('')
+    setArticleError('')
+    setIsAuthChecking(true)
+
+    return mainApi.loginUser(credentials)
+      .then(({ token }) => {
+        if (generation !== sessionGeneration.current) throw new DOMException('Sign in canceled', 'AbortError')
+        return loadSession(token).then((session) => ({ ...session, token }))
+      })
+      .then(({ token, user, articles: storedArticles }) => {
+        if (generation !== sessionGeneration.current) return
+        localStorage.setItem(JWT_STORAGE_KEY, token)
+        setCurrentUser(user)
+        setSavedArticles(storedArticles.map(formatSavedArticle))
+        loginAttempt.current = null
+        handleCloseModal()
+      })
+      .finally(() => {
+        if (generation === sessionGeneration.current) {
+          loginAttempt.current = null
+          setIsAuthChecking(false)
+        }
+      })
+  }
+  const handleRegister = (userData) => mainApi.registerUser(userData)
+  const handleLogout = () => {
+    sessionGeneration.current += 1
+    localStorage.removeItem(JWT_STORAGE_KEY)
+    setCurrentUser(null)
+    setSavedArticles([])
+    setPendingArticleUrls([])
+    pendingArticleRequests.current.clear()
+    setSessionError('')
+    setArticleError('')
+    setIsAuthChecking(false)
+    handleCloseModal()
+    history.replace('/')
   }
   const handleSearch = (query) => {
-    setCurrentKeyword(query)
+    const generation = ++searchGeneration.current
+    setArticleError('')
     setHasSearched(true)
     setIsLoading(true)
     setSearchError('')
@@ -122,54 +164,60 @@ function App() {
 
     return getNews(query)
       .then((data) => {
-        setArticles(data.articles.map(formatArticle))
+        if (generation === searchGeneration.current) {
+          setArticles(formatSearchArticles(data.articles, query, sitSpotImage))
+        }
       })
       .catch(() => {
-        setSearchError(SEARCH_ERROR_MESSAGE)
+        if (generation === searchGeneration.current) setSearchError(SEARCH_ERROR_MESSAGE)
       })
       .finally(() => {
-        setIsLoading(false)
+        if (generation === searchGeneration.current) setIsLoading(false)
       })
   }
 
   const handleToggleArticleSave = (article) => {
-    const token = localStorage.getItem('jwt')
-
+    const token = localStorage.getItem(JWT_STORAGE_KEY)
     if (!token || !currentUser) {
-      handleSignInClick()
+      handleRegisterClick()
       return Promise.resolve()
     }
+    if (pendingArticleRequests.current.has(article.url)) return Promise.resolve()
+    const savedArticle = savedArticles.find((stored) => stored.url === article.url)
+    const generation = sessionGeneration.current
+    const operation = {}
+    const isCurrent = () => generation === sessionGeneration.current &&
+      localStorage.getItem(JWT_STORAGE_KEY) === token
+    pendingArticleRequests.current.set(article.url, operation)
+    setArticleError('')
+    setPendingArticleUrls((urls) => [...urls, article.url])
 
-    const savedArticle = savedArticles.find(
-      (storedArticle) => storedArticle.url === article.url,
-    )
-
-    setPendingArticleUrls((currentUrls) => [...currentUrls, article.url])
-
-    const request = savedArticle
-      ? deleteArticle(token, savedArticle._id).then(() => {
-          setSavedArticles((currentArticles) =>
-            currentArticles.filter(
-              (storedArticle) => storedArticle._id !== savedArticle._id,
-            ),
-          )
+    return Promise.resolve()
+      .then(() => savedArticle
+        ? mainApi.deleteArticle(token, savedArticle._id)
+        : mainApi.saveArticle(token, createArticlePayload(article)))
+      .then((storedArticle) => {
+        if (!isCurrent()) return
+        setSavedArticles((current) => {
+          if (!isCurrent()) return current
+          if (savedArticle) return current.filter((stored) => stored._id !== savedArticle._id)
+          return [formatSavedArticle(storedArticle), ...current.filter((stored) => stored.url !== article.url)]
         })
-      : saveArticle(token, article, currentKeyword).then((storedArticle) => {
-          setSavedArticles((currentArticles) => [
-            storedArticle,
-            ...currentArticles,
-          ])
-        })
-
-    return request
-      .catch(() => {
-        handleLogout()
-        handleSignInClick()
+      })
+      .catch((error) => {
+        if (!isCurrent()) return
+        if (error.status === HTTP_STATUS.UNAUTHORIZED) {
+          handleLogout()
+          handleSignInClick()
+        } else {
+          setArticleError(getArticleErrorMessage(error))
+        }
       })
       .finally(() => {
-        setPendingArticleUrls((currentUrls) =>
-          currentUrls.filter((url) => url !== article.url),
-        )
+        if (pendingArticleRequests.current.get(article.url) === operation) {
+          pendingArticleRequests.current.delete(article.url)
+          if (isCurrent()) setPendingArticleUrls((urls) => urls.filter((url) => url !== article.url))
+        }
       })
   }
 
@@ -177,7 +225,6 @@ function App() {
     <>
       <section className="page__hero">
         <Header
-          currentUser={currentUser}
           onSignInClick={handleSignInClick}
           onLogout={handleLogout}
         />
@@ -199,19 +246,29 @@ function App() {
   )
 
   return (
-    <div className="page">
-      <Routes>
-        <Route path="/" element={homePage} />
-        <Route
-          path="/saved-news"
-          element={
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="page">
+        {sessionError && (
+          <div className="page__notice" role="alert">
+            <p>{sessionError}</p>
+            <button type="button" onClick={() => setSessionAttempt((attempt) => attempt + 1)}>
+              Retry session
+            </button>
+            <button type="button" onClick={handleLogout}>Sign out</button>
+          </div>
+        )}
+        {articleError && <p className="page__notice" role="alert">{articleError}</p>}
+        <Switch>
+          <Route exact path="/">
+            {homePage}
+          </Route>
+          <Route path="/saved-news">
             <ProtectedRoute
-              isLoggedIn={Boolean(currentUser)}
               isAuthChecking={isAuthChecking}
+              sessionError={sessionError}
               onUnauthorized={handleSignInClick}
             >
               <SavedNews
-                currentUser={currentUser}
                 onSignInClick={handleSignInClick}
                 onLogout={handleLogout}
                 savedArticles={savedArticles}
@@ -219,29 +276,29 @@ function App() {
                 onToggleSave={handleToggleArticleSave}
               />
             </ProtectedRoute>
-          }
+          </Route>
+          <Redirect to="/" />
+        </Switch>
+        <LoginModal
+          isOpen={activeModal === 'login'}
+          onClose={handleCloseModal}
+          onRegisterClick={handleRegisterClick}
+          onLogin={handleLogin}
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <LoginModal
-        isOpen={activeModal === 'login'}
-        onClose={handleCloseModal}
-        onRegisterClick={handleRegisterClick}
-        onLogin={handleLogin}
-      />
-      <RegisterModal
-        isOpen={activeModal === 'register'}
-        onClose={handleCloseModal}
-        onLoginClick={handleSignInClick}
-        onRegister={handleRegister}
-        onSuccess={handleRegistrationSuccess}
-      />
-      <RegistrationSuccessModal
-        isOpen={activeModal === 'registration-success'}
-        onClose={handleCloseModal}
-        onSignInClick={handleSignInClick}
-      />
-    </div>
+        <RegisterModal
+          isOpen={activeModal === 'register'}
+          onClose={handleCloseModal}
+          onLoginClick={handleSignInClick}
+          onRegister={handleRegister}
+          onSuccess={handleRegistrationSuccess}
+        />
+        <RegistrationSuccessModal
+          isOpen={activeModal === 'registration-success'}
+          onClose={handleCloseModal}
+          onSignInClick={handleSignInClick}
+        />
+      </div>
+    </CurrentUserContext.Provider>
   )
 }
 

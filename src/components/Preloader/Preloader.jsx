@@ -1,10 +1,10 @@
 import './Preloader.css'
 
-function Preloader() {
+function Preloader({ message = 'Searching for news...' }) {
   return (
     <section className="preloader" role="status" aria-live="polite">
       <div className="preloader__spinner" aria-hidden="true" />
-      <p className="preloader__text">Searching for news...</p>
+      <p className="preloader__text">{message}</p>
     </section>
   )
 }

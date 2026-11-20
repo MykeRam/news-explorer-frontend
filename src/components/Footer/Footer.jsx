@@ -1,5 +1,6 @@
 import './Footer.css'
 import { Link } from 'react-router-dom'
+import { EXTERNAL_LINKS } from '../../utils/config.js'
 import githubIcon from '../../images/github-icon.svg'
 import linkedinIcon from '../../images/linkedin-icon.svg'
 
@@ -16,7 +17,7 @@ function Footer() {
           </Link>
           <a
             className="footer__link"
-            href="https://tripleten.com/"
+            href={EXTERNAL_LINKS.TRIPLETEN}
             target="_blank"
             rel="noreferrer"
           >
@@ -24,7 +25,7 @@ function Footer() {
           </a>
           <a
             className="footer__social-link"
-            href="https://github.com/MykeRam"
+            href={EXTERNAL_LINKS.GITHUB}
             target="_blank"
             rel="noreferrer"
             aria-label="Michael Ramirez on GitHub"
@@ -33,7 +34,7 @@ function Footer() {
           </a>
           <a
             className="footer__social-link"
-            href="https://www.linkedin.com/in/michaelramirezz/"
+            href={EXTERNAL_LINKS.LINKEDIN}
             target="_blank"
             rel="noreferrer"
             aria-label="Michael Ramirez on LinkedIn"

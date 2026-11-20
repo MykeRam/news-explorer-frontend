@@ -23,3 +23,17 @@
     background-position: center;
   }
 }
+
+.page__notice {
+  margin: 0;
+  padding: 16px 24px;
+  color: #1a1b22;
+  background: #f5f6f7;
+  font-family: Roboto, Arial, sans-serif;
+}
+
+.page__notice button {
+  margin-right: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+}

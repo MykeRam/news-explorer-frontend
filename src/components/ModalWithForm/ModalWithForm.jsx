@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useRef } from 'react'
+import useModal from '../../hooks/useModal.js'
 import './ModalWithForm.css'
 
 function ModalWithForm({
@@ -13,16 +14,8 @@ function ModalWithForm({
   children,
   isSubmitDisabled = true,
 }) {
-  useEffect(() => {
-    if (!isOpen) return undefined
-
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') onClose()
-    }
-
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
+  const containerRef = useRef(null)
+  useModal(isOpen, onClose, containerRef)
 
   if (!isOpen) return null
 
@@ -34,6 +27,7 @@ function ModalWithForm({
     <div className="modal" onMouseDown={handleOverlayMouseDown}>
       <div
         className="modal__container"
+        ref={containerRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${name}-modal-title`}
@@ -47,7 +41,7 @@ function ModalWithForm({
         <h2 className="modal__title" id={`${name}-modal-title`}>
           {title}
         </h2>
-        <form className="modal__form" name={name} onSubmit={onSubmit}>
+        <form className="modal__form" name={name} onSubmit={onSubmit} noValidate>
           {children}
           <button
             className="modal__submit"

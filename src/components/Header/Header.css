@@ -103,3 +103,14 @@
     transform: translateY(-3.5px) rotate(-45deg);
   }
 }
+
+.header__logo:focus-visible,
+.header__menu-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.header_theme_light .header__logo:focus-visible,
+.header_theme_light .header__menu-button:focus-visible {
+  outline-color: #2f71e5;
+}
