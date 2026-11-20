@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import './RegisterModal.css'
 import ModalWithForm from '../ModalWithForm/ModalWithForm.jsx'
 import {
   PASSWORD_MIN_LENGTH,

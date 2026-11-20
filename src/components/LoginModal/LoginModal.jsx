@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import './LoginModal.css'
 import ModalWithForm from '../ModalWithForm/ModalWithForm.jsx'
 
 import { validateAuthField } from '../../utils/authValidation.js'
